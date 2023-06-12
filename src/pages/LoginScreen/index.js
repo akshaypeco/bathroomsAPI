@@ -11,23 +11,13 @@ import { Ionicons } from "@expo/vector-icons";
 import {
   createUserWithEmailAndPassword,
   getAuth,
-  onAuthStateChanged,
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import app from "../../../firebase";
 
-const LoginScreen = ({ navigation }) => {
+const LoginScreen = () => {
   const [email, setEmail] = useState("");
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(getAuth(app), (user) => {
-      if (user) {
-        navigation.navigate("Main Stage", { user: user.toJSON() });
-      }
-    });
-
-    return unsubscribe;
-  }, []);
+  const [error, setError] = useState("");
 
   const handleSignUp = () => {
     createUserWithEmailAndPassword(getAuth(app), email, "password")
@@ -36,22 +26,34 @@ const LoginScreen = ({ navigation }) => {
         console.log("Registered with: ", user.email);
       })
       .catch((e) => {
-        alert(e.message);
+        if (e.code == "auth/invalid-email") {
+          setError("Please register with a valid email.");
+        }
+        if (e.code == "auth/missing-email") {
+          setError("Please enter an email.");
+        }
       });
   };
 
   const handleLogIn = () => {
-    signInWithEmailAndPassword(getAuth(app), email, "password").then(
-      (userCredentials) => {
+    signInWithEmailAndPassword(getAuth(app), email, "password")
+      .then((userCredentials) => {
         const user = userCredentials.user;
         console.log("Logged in with: ", user.email);
-      }
-    );
+      })
+      .catch((e) => {
+        if (e.code == "auth/invalid-email") {
+          setError("Invalid email.");
+        }
+        if (e.code == "auth/user-not-found") {
+          setError("Email not found. Please try again or register.");
+        }
+      });
   };
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
-      <Text style={styles.titleText}>Bathrooms</Text>
+      <Text style={styles.titleText}>GottaGo</Text>
       <View style={styles.inputContainer}>
         <TextInput
           placeholder="Email"
@@ -70,10 +72,7 @@ const LoginScreen = ({ navigation }) => {
           }}
         >
           <Ionicons name="information-circle-outline" size={17} color="grey" />
-          <Text style={styles.disclaimerText}>
-            Your email is not shared with anyone, and is used for accurate and
-            editable data.
-          </Text>
+          <Text style={styles.disclaimerText}>Your email is confidential.</Text>
         </View>
       </View>
       <View style={styles.buttonContainer}>
@@ -87,6 +86,19 @@ const LoginScreen = ({ navigation }) => {
           <Text style={styles.buttonOutlineText}>Register</Text>
         </TouchableOpacity>
       </View>
+      {error ? (
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginLeft: 8,
+            marginTop: 5,
+          }}
+        >
+          <Ionicons name="information-circle-outline" size={17} color="red" />
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      ) : null}
     </KeyboardAvoidingView>
   );
 };
@@ -96,7 +108,7 @@ export default LoginScreen;
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: "center", alignItems: "center" },
   titleText: {
-    fontFamily: "Bold",
+    fontFamily: "ABold",
     fontSize: 30,
     marginBottom: 100,
   },
@@ -104,32 +116,38 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: "white",
     paddingHorizontal: 15,
-    paddingVertical: 10,
+    paddingVertical: 12,
     borderRadius: 10,
     marginTop: 5,
-    fontFamily: "Medium",
-    fontSize: 15,
+    fontFamily: "ARegular",
+    fontSize: 16,
   },
   disclaimerText: {
-    fontFamily: "Medium",
+    fontFamily: "ARegular",
     color: "grey",
     fontSize: 13,
     paddingHorizontal: 4,
   },
+  errorText: {
+    fontFamily: "ARegular",
+    color: "red",
+    fontSize: 14.5,
+    paddingHorizontal: 4,
+  },
   buttonContainer: {
-    width: "60%",
+    width: "80%",
     alignItems: "center",
     justifyContent: "center",
     marginTop: 50,
   },
   button: {
-    backgroundColor: "#52796f",
+    backgroundColor: "black",
     width: "100%",
     padding: 15,
     alignItems: "center",
     borderRadius: 5,
   },
   buttonOutline: { backgroundColor: "white", marginTop: 5 },
-  buttonText: { fontFamily: "Bold", color: "white", fontSize: 15 },
-  buttonOutlineText: { fontFamily: "Bold", fontSize: 15 },
+  buttonText: { fontFamily: "ABold", color: "white", fontSize: 15 },
+  buttonOutlineText: { fontFamily: "ABold", fontSize: 15 },
 });

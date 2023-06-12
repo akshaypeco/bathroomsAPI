@@ -88,7 +88,7 @@ export default function HomeScreen({ navigation }) {
 
   const onRegionChangeComplete = (region) => {
     setCurrRegion(region);
-    if (region.latitudeDelta <= 0.15 && region.longitudeDelta <= 0.15) {
+    if (region.latitudeDelta <= 0.18 && region.longitudeDelta <= 0.18) {
       getData(
         region.latitude,
         region.longitude,
@@ -119,7 +119,6 @@ export default function HomeScreen({ navigation }) {
             }}
             key={hit._id}
           >
-            {/* <FontAwesome5 name="toilet" size={22} color="#0077b6" /> */}
             <Foundation name="marker" size={24} color="#0077b6" />
             <Callout
               onPress={() => {
@@ -131,7 +130,7 @@ export default function HomeScreen({ navigation }) {
                 <View>
                   <Text style={styles.title}>{hit.name}</Text>
                   <Text style={styles.street}>{hit.street}</Text>
-                  <View>
+                  {/* <View>
                     {(hit.upvote > 0 || hit.downvote > 0) &&
                     hit.upvote / (hit.upvote + hit.downvote) < 0.5 ? (
                       <View style={styles.lowRatingContainer}>
@@ -143,8 +142,8 @@ export default function HomeScreen({ navigation }) {
                         </Text>
                       </View>
                     ) : null}
-                  </View>
-                  <View>
+                  </View> */}
+                  {/* <View>
                     {(hit.upvote > 0 || hit.downvote > 0) &&
                     hit.upvote / (hit.upvote + hit.downvote) >= 0.5 &&
                     hit.upvote / (hit.upvote + hit.downvote) < 0.75 ? (
@@ -157,8 +156,8 @@ export default function HomeScreen({ navigation }) {
                         </Text>
                       </View>
                     ) : null}
-                  </View>
-                  <View>
+                  </View> */}
+                  {/* <View>
                     {(hit.upvote > 0 || hit.downvote > 0) &&
                     hit.upvote / (hit.upvote + hit.downvote) > 0.75 ? (
                       <View style={styles.bestRatingContainer}>
@@ -170,13 +169,15 @@ export default function HomeScreen({ navigation }) {
                         </Text>
                       </View>
                     ) : null}
-                  </View>
-                  <View>
+                  </View> */}
+                  {/* <View>
                     {hit.upvote == 0 && hit.downvote == 0 ? (
                       <Text style={styles.rating}>No ratings yet</Text>
                     ) : null}
-                  </View>
-                  {hit.unisex == 1 || hit.changing_table == 1 ? (
+                  </View> */}
+                  {hit.unisex == 1 ||
+                  hit.changing_table == 1 ||
+                  hit.accessible == 1 ? (
                     <View style={styles.attributesContainer}>
                       <View style={{ flexDirection: "row" }}>
                         {hit.unisex == 1 ? (
@@ -189,6 +190,11 @@ export default function HomeScreen({ navigation }) {
                             <Text style={styles.attributes}>
                               Changing table
                             </Text>
+                          </View>
+                        ) : null}
+                        {hit.accessible == 1 ? (
+                          <View style={styles.tagContainer}>
+                            <Text style={styles.attributes}>Accessible</Text>
                           </View>
                         ) : null}
                       </View>
@@ -218,7 +224,7 @@ export default function HomeScreen({ navigation }) {
       >
         <FontAwesome name="location-arrow" size={35} color={icon} />
       </Pressable>
-      {currRegion.longitudeDelta > 0.15 || currRegion.latitudeDelta > 0.15 ? (
+      {currRegion.longitudeDelta > 0.18 || currRegion.latitudeDelta > 0.18 ? (
         <View style={[styles.searchAreaButton]}>
           <Text style={{ fontSize: 17, color: "#e63946" }}>
             Zoom in to search
@@ -273,14 +279,6 @@ const styles = StyleSheet.create({
     borderColor: "white",
   },
   bathroomLocationDot: {
-    // height: 10,
-    // width: 10,
-    // backgroundColor: "#1f3a6f",
-    // borderRadius: 10,
-    // shadowColor: "#171717",
-    // shadowOffset: { width: -2, height: 4 },
-    // shadowOpacity: 0.2,
-    // shadowRadius: 3,
     backgroundColor: "#219ebc",
     padding: 5,
     borderRadius: 5,
@@ -307,11 +305,12 @@ const styles = StyleSheet.create({
   },
   tagContainer: {
     padding: 5,
-    backgroundColor: "#edede9",
+    backgroundColor: "#b5e48c",
     marginRight: 5,
+    borderRadius: 5,
   },
-  title: { fontFamily: "Bold", fontSize: 16 },
-  street: { fontFamily: "Medium", fontSize: 16, color: "grey" },
+  title: { fontFamily: "ABold", fontSize: 16 },
+  street: { fontFamily: "Medium", fontSize: 14, color: "grey" },
   lowRatingContainer: {
     backgroundColor: "#ddbea9",
     justifyContent: "center",
@@ -339,9 +338,9 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     borderRadius: 10,
   },
-  rating: { fontFamily: "Medium", fontSize: 14 },
+  rating: { fontFamily: "Medium", fontSize: 13 },
   attributesContainer: {
     marginTop: 10,
   },
-  attributes: { fontFamily: "Medium", fontSize: 14 },
+  attributes: { fontFamily: "ARegular", fontSize: 14 },
 });

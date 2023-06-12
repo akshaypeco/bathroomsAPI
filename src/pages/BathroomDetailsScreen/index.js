@@ -7,13 +7,22 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import MapView, { Marker } from "react-native-maps";
 import { Feather } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 
 const BathroomDetailsScreen = ({ navigation, route }) => {
-  const { hit, user } = route.params;
+  const { hit } = route.params;
+  const [isFavorited, setIsFavorited] = useState(false);
+
+  const handleFavorited = () => {
+    setIsFavorited(!isFavorited);
+    if (!isFavorited) {
+      navigation.navigate("FavoritedSuccess");
+    }
+  };
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
       <ScrollView>
@@ -25,13 +34,14 @@ const BathroomDetailsScreen = ({ navigation, route }) => {
             </Text>
           </View>
           <View>
-            <MaterialIcons
-              name="favorite-border"
-              size={26}
-              color="black"
-              style={{ marginRight: 20 }}
-            />
-            {/* <MaterialIcons name="favorite" size={24} color="black" /> */}
+            <Pressable onPress={handleFavorited}>
+              <MaterialIcons
+                name={isFavorited ? "favorite" : "favorite-border"}
+                size={26}
+                color="black"
+                style={{ marginRight: 20 }}
+              />
+            </Pressable>
           </View>
         </View>
         <View
@@ -42,7 +52,7 @@ const BathroomDetailsScreen = ({ navigation, route }) => {
               <Text style={styles.upvote}>{hit.upvote}</Text>
               <Feather
                 name="thumbs-up"
-                size={22}
+                size={20}
                 color="#008000"
                 style={{ paddingLeft: 5 }}
               />
@@ -53,7 +63,7 @@ const BathroomDetailsScreen = ({ navigation, route }) => {
               <Text style={styles.downvote}>{hit.downvote}</Text>
               <Feather
                 name="thumbs-down"
-                size={22}
+                size={20}
                 color="#ad2e24"
                 style={{ paddingLeft: 5 }}
               />
@@ -67,9 +77,13 @@ const BathroomDetailsScreen = ({ navigation, route }) => {
               }}
             >
               <Text
-                style={{ fontFamily: "Bold", fontSize: 15.5, color: "#0077b6" }}
+                style={{
+                  fontFamily: "ABold",
+                  fontSize: 15.5,
+                  color: "#0077b6",
+                }}
               >
-                Be the first to rate this bathroom {">"}
+                Be the first to rate this bathroom
               </Text>
             </Pressable>
           ) : null}
@@ -93,9 +107,7 @@ const BathroomDetailsScreen = ({ navigation, route }) => {
         </View>
 
         <View style={styles.addressContainer}>
-          <Text style={{ fontFamily: "Medium", fontSize: 15 }}>
-            Address {">"}
-          </Text>
+          <Text style={{ fontFamily: "ARegular", fontSize: 15 }}>Address</Text>
           <Text style={styles.address}>
             {hit.street}, {hit.city} {hit.state}
           </Text>
@@ -108,7 +120,7 @@ const BathroomDetailsScreen = ({ navigation, route }) => {
               <Text style={styles.tagText}>Accessible</Text>
             </View>
           ) : (
-            <View style={[styles.tagContainer, { backgroundColor: "#e9ecef" }]}>
+            <View style={[styles.tagContainer, { backgroundColor: "#f5f3f4" }]}>
               <Text style={[styles.tagText, { color: "grey" }]}>
                 Accessible
               </Text>
@@ -119,7 +131,7 @@ const BathroomDetailsScreen = ({ navigation, route }) => {
               <Text style={styles.tagText}>Unisex</Text>
             </View>
           ) : (
-            <View style={[styles.tagContainer, { backgroundColor: "#e9ecef" }]}>
+            <View style={[styles.tagContainer, { backgroundColor: "#f5f3f4" }]}>
               <Text style={[styles.tagText, { color: "grey" }]}>Unisex</Text>
             </View>
           )}
@@ -137,7 +149,9 @@ const BathroomDetailsScreen = ({ navigation, route }) => {
         </View>
         {hit.directions ? (
           <View style={styles.directionsContainer}>
-            <Text style={{ fontFamily: "Medium", fontSize: 16, color: "grey" }}>
+            <Text
+              style={{ fontFamily: "ARegular", fontSize: 16, color: "grey" }}
+            >
               Description
             </Text>
             <Text style={styles.directions}>{hit.directions}</Text>
@@ -145,12 +159,20 @@ const BathroomDetailsScreen = ({ navigation, route }) => {
         ) : null}
         {hit.comment ? (
           <View style={styles.commentContainer}>
-            <Text style={{ fontFamily: "Medium", fontSize: 16, color: "grey" }}>
+            <Text
+              style={{ fontFamily: "ARegular", fontSize: 16, color: "grey" }}
+            >
               Comment
             </Text>
             <Text style={styles.comment}>{hit.comment}</Text>
           </View>
         ) : null}
+        <View style={styles.reviewContainer}>
+          <Text style={{ fontFamily: "ARegular", fontSize: 16, color: "grey" }}>
+            Reviews
+          </Text>
+          <View style={styles.reviews}></View>
+        </View>
       </ScrollView>
       <TouchableOpacity
         style={styles.rateButtonContainer}
@@ -183,7 +205,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   bathroomTitle: {
-    fontFamily: "Bold",
+    fontFamily: "ABold",
     fontSize: 25,
     marginLeft: 20,
     marginTop: 10,
@@ -192,24 +214,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    borderColor: "#cfe1b9",
-    borderWidth: 2,
     paddingVertical: 5,
     paddingHorizontal: 8,
     borderRadius: 10,
-    marginRight: 10,
   },
   upvote: { fontFamily: "Medium", fontSize: 16, color: "#008000" },
   downvoteContainer: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    borderColor: "#ffcdb2",
-    borderWidth: 2,
     paddingVertical: 5,
     paddingHorizontal: 8,
     borderRadius: 10,
-    marginRight: 10,
   },
   downvote: { fontFamily: "Medium", fontSize: 16, color: "#ad2e24" },
   rateContainer: {
@@ -219,7 +235,7 @@ const styles = StyleSheet.create({
     // marginRight: 10,
   },
   updatedDate: {
-    fontFamily: "Medium",
+    fontFamily: "ARegular",
     fontSize: 15.5,
     marginLeft: 20,
     color: "grey",
@@ -232,7 +248,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   address: {
-    fontFamily: "Medium",
+    fontFamily: "ARegular",
     fontSize: 17,
   },
   tagContainer: {
@@ -242,13 +258,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginRight: 10,
   },
-  tagText: { fontFamily: "Medium", fontSize: 17 },
+  tagText: { fontFamily: "ARegular", fontSize: 17 },
   directionsContainer: {
     marginTop: 15,
     marginHorizontal: 20,
   },
   directions: {
-    fontFamily: "Medium",
+    fontFamily: "ARegular",
     fontSize: 16,
   },
   commentContainer: {
@@ -256,8 +272,15 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   comment: {
-    fontFamily: "Medium",
+    fontFamily: "ARegular",
     fontSize: 16,
+  },
+  reviewContainer: { marginTop: 15, marginHorizontal: 20 },
+  reviews: {
+    borderWidth: 1,
+    borderColor: "light gray",
+    height: 200,
+    marginTop: 5,
   },
   rateButtonContainer: {
     backgroundColor: "#0077b6",
@@ -269,7 +292,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   rateButtonText: {
-    fontFamily: "Bold",
+    fontFamily: "ABold",
     color: "white",
     fontSize: 20,
   },

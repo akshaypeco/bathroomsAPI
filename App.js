@@ -3,11 +3,8 @@ import { Text, View, StyleSheet, StatusBar } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
 import { loadAsync } from "expo-font";
 import * as Location from "expo-location";
-import HomeScreen from "./src/pages/HomeScreen";
-import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { LoginStackNavigator } from "./src/navigation/StackNavigators";
-import TabNavigator from "./src/navigation/TabNavigator";
+import RootNavigation from "./src/navigation";
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -24,6 +21,9 @@ export default function App() {
         await loadAsync({
           Bold: require("./src/assets/fonts/UberMoveBold.otf"),
           Medium: require("./src/assets/fonts/UberMoveMedium.otf"),
+          ABold: require("./src/assets/fonts/AeonikTRIAL-Bold.otf"),
+          ALight: require("./src/assets/fonts/AeonikTRIAL-Light.otf"),
+          ARegular: require("./src/assets/fonts/AeonikTRIAL-Regular.otf"),
         });
 
         // location permissions
@@ -59,21 +59,7 @@ export default function App() {
 
   return (
     <View style={styles.root} onLayout={onLayoutRootView}>
-      <NavigationContainer>
-        <StatusBar barStyle={"dark-content"} />
-        <Stack.Navigator>
-          <Stack.Screen
-            name="Login Stage"
-            component={LoginStackNavigator}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Main Stage"
-            component={TabNavigator}
-            options={{ headerShown: false, gestureEnabled: false }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <RootNavigation />
     </View>
   );
 }

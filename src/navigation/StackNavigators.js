@@ -1,21 +1,12 @@
-import { View, Text } from "react-native";
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "../pages/HomeScreen";
-import LoginScreen from "../pages/LoginScreen";
 import BathroomDetailsScreen from "../pages/BathroomDetailsScreen";
 import AddRatingScreen from "../pages/AddRatingScreen";
+import RatingSubmittedScreen from "../pages/RatingSubmittedScreen";
+import FavoritedSuccessScreen from "../pages/FavoritedSuccessScreen";
 
-const AuthStack = createNativeStackNavigator();
 const HomeStack = createNativeStackNavigator();
-
-const LoginStackNavigator = () => {
-  return (
-    <AuthStack.Navigator screenOptions={{ headerShown: false }}>
-      <AuthStack.Screen name="Login" component={LoginScreen} />
-    </AuthStack.Navigator>
-  );
-};
 
 const HomeScreenNavigator = () => {
   return (
@@ -27,11 +18,23 @@ const HomeScreenNavigator = () => {
           component={BathroomDetailsScreen}
         />
       </HomeStack.Group>
-      <HomeStack.Group screenOptions={{ presentation: "modal" }}>
-        <HomeStack.Screen name="AddRating" component={AddRatingScreen} />
-      </HomeStack.Group>
+      <HomeStack.Screen
+        name="AddRating"
+        component={AddRatingScreen}
+        options={{ presentation: "modal" }}
+      />
+      <HomeStack.Screen
+        name="RatingSubmitted"
+        component={RatingSubmittedScreen}
+        options={{ presentation: "fullScreenModal" }}
+      />
+      <HomeStack.Screen
+        name="FavoritedSuccess"
+        component={FavoritedSuccessScreen}
+        options={{ presentation: "modal" }}
+      />
     </HomeStack.Navigator>
   );
 };
 
-export { LoginStackNavigator, HomeScreenNavigator };
+export { HomeScreenNavigator };
