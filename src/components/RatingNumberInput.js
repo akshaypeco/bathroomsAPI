@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   starUnselected: {
-    color: "#aaa",
+    color: "#aaaa",
   },
   starSelected: {
     color: "#ffb300",

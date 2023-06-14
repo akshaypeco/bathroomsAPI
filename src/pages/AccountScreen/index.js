@@ -22,9 +22,9 @@ const AccountScreen = () => {
     const fetchData = async () => {
       const data = await getUserReviews(user.uid).catch((e) => alert(e));
       setReviews(data);
-      console.log(data);
+      console.log("Successfully retrieved user reviews.");
     };
-    fetchData();
+    fetchData().catch((e) => alert(e));
   }, [user]);
 
   return (
@@ -59,34 +59,38 @@ const AccountScreen = () => {
       <View style={{ marginTop: 20 }}>
         <Text style={styles.statsHeader}>Your Reviews</Text>
         <View>
-          {reviews?.map(function (item) {
-            return (
-              <View key={item.id} style={styles.reviewContainer}>
-                <Text style={styles.name}>{item.name}</Text>
-                <Text style={styles.city}>{item.city}</Text>
-                <View style={{ flexDirection: "row", marginTop: 5 }}>
-                  <Text style={styles.stocked}>Stocked: {item.is_stocked}</Text>
-                  <Text style={styles.clean}>Clean: {item.is_clean}</Text>
-                  <Text style={styles.wait}>Wait: {item.wait_time}</Text>
-                </View>
-                <View>
-                  {item.comment ? (
-                    <Text
-                      style={[
-                        styles.comment,
-                        { fontFamily: "ABold", color: "grey" },
-                      ]}
-                    >
-                      Comment:{" "}
-                      <Text style={[styles.comment, { color: "black" }]}>
-                        {item.comment}
-                      </Text>
+          <View>
+            {reviews?.map(function (item) {
+              return (
+                <View key={item.id} style={styles.reviewContainer}>
+                  <Text style={styles.name}>{item.name}</Text>
+                  <Text style={styles.city}>{item.city}</Text>
+                  <View style={{ flexDirection: "row", marginTop: 5 }}>
+                    <Text style={styles.stocked}>
+                      Stocked: {item.is_stocked}
                     </Text>
-                  ) : null}
+                    <Text style={styles.clean}>Clean: {item.is_clean}</Text>
+                    <Text style={styles.wait}>Wait: {item.wait_time}</Text>
+                  </View>
+                  <View>
+                    {item.comment ? (
+                      <Text
+                        style={[
+                          styles.comment,
+                          { fontFamily: "ABold", color: "grey" },
+                        ]}
+                      >
+                        Comment:{" "}
+                        <Text style={[styles.comment, { color: "black" }]}>
+                          {item.comment}
+                        </Text>
+                      </Text>
+                    ) : null}
+                  </View>
                 </View>
-              </View>
-            );
-          })}
+              );
+            })}
+          </View>
         </View>
       </View>
     </SafeAreaView>

@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: "ARegular",
     fontSize: 17,
-    marginLeft: 20,
+    textAlign: "center",
   },
   ratingNumber: { fontFamily: "ARegular", fontSize: 17 },
   ratingOptionsContainer: {

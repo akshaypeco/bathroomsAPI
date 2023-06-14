@@ -30,8 +30,9 @@ const BathroomDetailsScreen = ({ navigation, route }) => {
           <View style={{ width: "80%" }}>
             <Text style={styles.bathroomTitle}>{hit.name}</Text>
             <Text style={styles.updatedDate}>
-              Last updated in {hit.updated_at.substring(0, 4)}
+              Last changed in {hit.updated_at.substring(0, 4)}
             </Text>
+            <Text style={styles.reportIssue}>Report an issue</Text>
           </View>
           <View>
             <Pressable onPress={handleFavorited}>
@@ -225,6 +226,13 @@ const styles = StyleSheet.create({
     fontSize: 25,
     marginLeft: 20,
     marginTop: 10,
+  },
+  reportIssue: {
+    fontFamily: "ABold",
+    color: "grey",
+    textDecorationLine: "underline",
+    marginLeft: 20,
+    marginTop: 3,
   },
   upvoteContainer: {
     flexDirection: "row",

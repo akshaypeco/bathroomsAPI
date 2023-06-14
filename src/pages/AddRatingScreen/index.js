@@ -78,14 +78,14 @@ const AddRatingScreen = ({ navigation, route }) => {
           <Text style={styles.title}>{hit.name}</Text>
         </View>
         <RatingInput
-          title="Comment (optional)"
-          placeholder={"Staff was very friendly"}
+          title="Comment"
+          placeholder={"Optional"}
           handleInput={setComment}
         />
-        <RatingNumberInput title="Cleanliness" handleRating={setClean} />
-        <RatingNumberInput title="Short wait time" handleRating={setWait} />
+        <RatingNumberInput title="Clean?" handleRating={setClean} />
+        <RatingNumberInput title="Short wait?" handleRating={setWait} />
         <RatingNumberInput
-          title="Well-stocked (toilet paper, etc.)"
+          title="Well-stocked (toilet paper, etc.)?"
           handleRating={setStocked}
         />
         <RatingBinaryInput title="Changing table" handleRating={setChanging} />

@@ -7,6 +7,7 @@ import {
   Image,
   Pressable,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
@@ -22,6 +23,7 @@ export default function HomeScreen({ navigation }) {
   const [currMarkerLoc, setcurrMarkerLoc] = useState(null);
   const [currRegion, setCurrRegion] = useState([]);
   const [markerData, setMarkerData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,22 +43,27 @@ export default function HomeScreen({ navigation }) {
     const maxLat = latitude + latitudeDelta / 2;
     const minLong = longitude - longitudeDelta / 2;
     const maxLong = longitude + longitudeDelta / 2;
-    axios
-      .get(
-        "https://westus.azure.data.mongodb-api.com/app/bathrooms-cgofs/endpoint/by_location",
-        {
-          params: {
-            secret: "bathrooms_secret",
-            latmin: minLat,
-            latmax: maxLat,
-            longmin: minLong,
-            longmax: maxLong,
-          },
-        }
-      )
-      .then((res) => {
-        setMarkerData(res.data);
-      });
+    setIsLoading(true);
+    setTimeout(async function () {
+      axios
+        .get(
+          "https://westus.azure.data.mongodb-api.com/app/bathrooms-cgofs/endpoint/by_location",
+          {
+            params: {
+              secret: "bathrooms_secret",
+              latmin: minLat,
+              latmax: maxLat,
+              longmin: minLong,
+              longmax: maxLong,
+            },
+          }
+        )
+        .then((res) => {
+          setMarkerData(res.data);
+        })
+        .catch((e) => alert(e))
+        .finally(setIsLoading(false));
+    }, 250);
   };
 
   const getCurrLoc = async () => {
@@ -227,11 +234,19 @@ export default function HomeScreen({ navigation }) {
           </Text>
         </View>
       ) : null}
-      {/* {isLoading ? (
-        <View style={[styles.searchAreaButton]}>
-          <Text style={{ fontSize: 17, color: "#e63946" }}>Loading</Text>
+      {isLoading ? (
+        <View
+          style={[
+            styles.searchAreaButton,
+            { flexDirection: "row", borderRadius: 100 },
+          ]}
+        >
+          <ActivityIndicator color={"black"} size={15} />
+          {/* <Text style={{ fontSize: 17, color: "black", marginLeft: 10 }}>
+            Loading
+          </Text> */}
         </View>
-      ) : null} */}
+      ) : null}
     </View>
   );
 }
