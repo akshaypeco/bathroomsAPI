@@ -21,7 +21,7 @@ const HomeScreenNavigator = () => {
       <HomeStack.Screen
         name="AddRating"
         component={AddRatingScreen}
-        options={{ presentation: "modal" }}
+        options={{ presentation: "fullScreenModal" }}
       />
       <HomeStack.Screen
         name="RatingSubmitted"

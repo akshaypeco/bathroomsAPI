@@ -69,9 +69,8 @@ const BathroomDetailsScreen = ({ navigation, route }) => {
               />
             </View>
           ) : null}
-          {hit.upvote == 0 && hit.downvote == 0 ? (
+          {/* {hit.upvote == 0 && hit.downvote == 0 ? (
             <Pressable
-              style={styles.rateContainer}
               onPress={() => {
                 navigation.navigate("AddRating", { hit });
               }}
@@ -83,10 +82,10 @@ const BathroomDetailsScreen = ({ navigation, route }) => {
                   color: "#0077b6",
                 }}
               >
-                Be the first to rate this bathroom
+                Be the first to review this bathroom
               </Text>
             </Pressable>
-          ) : null}
+          ) : null} */}
         </View>
         <View style={styles.mapContainer}>
           <MapView
@@ -107,7 +106,7 @@ const BathroomDetailsScreen = ({ navigation, route }) => {
         </View>
 
         <View style={styles.addressContainer}>
-          <Text style={{ fontFamily: "ARegular", fontSize: 15 }}>Address</Text>
+          <Text style={{ fontFamily: "ARegular", fontSize: 16 }}>Address</Text>
           <Text style={styles.address}>
             {hit.street}, {hit.city} {hit.state}
           </Text>
@@ -115,6 +114,15 @@ const BathroomDetailsScreen = ({ navigation, route }) => {
         <View
           style={{ flexDirection: "row", marginHorizontal: 20, marginTop: 10 }}
         >
+          {hit.unisex ? (
+            <View style={styles.tagContainer}>
+              <Text style={styles.tagText}>Unisex</Text>
+            </View>
+          ) : (
+            <View style={[styles.tagContainer, { backgroundColor: "#f5f3f4" }]}>
+              <Text style={[styles.tagText, { color: "grey" }]}>Unisex</Text>
+            </View>
+          )}
           {hit.accessible ? (
             <View style={styles.tagContainer}>
               <Text style={styles.tagText}>Accessible</Text>
@@ -124,15 +132,6 @@ const BathroomDetailsScreen = ({ navigation, route }) => {
               <Text style={[styles.tagText, { color: "grey" }]}>
                 Accessible
               </Text>
-            </View>
-          )}
-          {hit.unisex ? (
-            <View style={styles.tagContainer}>
-              <Text style={styles.tagText}>Unisex</Text>
-            </View>
-          ) : (
-            <View style={[styles.tagContainer, { backgroundColor: "#f5f3f4" }]}>
-              <Text style={[styles.tagText, { color: "grey" }]}>Unisex</Text>
             </View>
           )}
           {hit.changing_table ? (
@@ -171,16 +170,33 @@ const BathroomDetailsScreen = ({ navigation, route }) => {
           <Text style={{ fontFamily: "ARegular", fontSize: 16, color: "grey" }}>
             Reviews
           </Text>
-          <View style={styles.reviews}></View>
+          <Pressable
+            onPress={() => {
+              navigation.navigate("AddRating", { hit });
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: "ABold",
+                fontSize: 17,
+                color: "#0077b6",
+                marginTop: 5,
+                textAlign: "center",
+              }}
+            >
+              Be the first to review this bathroom
+            </Text>
+          </Pressable>
+          {/* <View style={styles.reviews}></View> */}
         </View>
       </ScrollView>
       <TouchableOpacity
-        style={styles.rateButtonContainer}
+        style={styles.reviewButtonContainer}
         onPress={() => {
           navigation.navigate("AddRating", { hit });
         }}
       >
-        <Text style={styles.rateButtonText}>Rate</Text>
+        <Text style={styles.reviewButtonText}>Review</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -228,7 +244,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   downvote: { fontFamily: "Medium", fontSize: 16, color: "#ad2e24" },
-  rateContainer: {
+  reviewContainer: {
     // backgroundColor: "#0077b6",
     // paddingVertical: 5,
     // paddingHorizontal: 8,
@@ -236,7 +252,7 @@ const styles = StyleSheet.create({
   },
   updatedDate: {
     fontFamily: "ARegular",
-    fontSize: 15.5,
+    fontSize: 16,
     marginLeft: 20,
     color: "grey",
   },
@@ -265,7 +281,7 @@ const styles = StyleSheet.create({
   },
   directions: {
     fontFamily: "ARegular",
-    fontSize: 16,
+    fontSize: 17,
   },
   commentContainer: {
     marginTop: 15,
@@ -273,16 +289,16 @@ const styles = StyleSheet.create({
   },
   comment: {
     fontFamily: "ARegular",
-    fontSize: 16,
+    fontSize: 17,
   },
   reviewContainer: { marginTop: 15, marginHorizontal: 20 },
   reviews: {
     borderWidth: 1,
-    borderColor: "light gray",
+    borderColor: "gray",
     height: 200,
     marginTop: 5,
   },
-  rateButtonContainer: {
+  reviewButtonContainer: {
     backgroundColor: "#0077b6",
     position: "absolute",
     bottom: "1%",
@@ -291,9 +307,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 50,
     borderRadius: 20,
   },
-  rateButtonText: {
+  reviewButtonText: {
     fontFamily: "ABold",
     color: "white",
-    fontSize: 20,
+    fontSize: 18,
   },
 });

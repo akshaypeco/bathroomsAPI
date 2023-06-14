@@ -1,24 +1,22 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useState } from "react";
 
-const RatingBinaryInput = ({ title }) => {
-  const [binaryYes, setBinaryYes] = useState(false);
-  const [binaryNo, setBinaryNo] = useState(false);
+const RatingBinaryInput = ({ title, handleRating }) => {
+  const [binary, setBinary] = useState(false);
+
   return (
     <View>
-      <Text style={styles.ratingTypeText}>{title}</Text>
+      <Text style={styles.title}>{title}</Text>
       <View style={styles.ratingOptionsContainer}>
         <TouchableOpacity
           onPress={() => {
-            setBinaryYes(!binaryYes);
-            if (!binaryYes) {
-              setBinaryNo(false);
-            }
+            setBinary(true);
+            handleRating(true);
           }}
           style={[
             styles.ratingNumberContainer,
             styles.boxWithShadow,
-            binaryYes
+            binary
               ? { backgroundColor: "#0077b6" }
               : { backgroundColor: "white" },
           ]}
@@ -26,7 +24,7 @@ const RatingBinaryInput = ({ title }) => {
           <Text
             style={[
               styles.ratingNumber,
-              binaryYes ? { color: "white" } : { color: "black" },
+              binary ? { color: "white" } : { color: "black" },
             ]}
           >
             Yes
@@ -34,15 +32,13 @@ const RatingBinaryInput = ({ title }) => {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
-            setBinaryNo(!binaryNo);
-            if (!binaryNo) {
-              setBinaryYes(false);
-            }
+            setBinary(false);
+            handleRating(false);
           }}
           style={[
             styles.ratingNumberContainer,
             styles.boxWithShadow,
-            binaryNo
+            !binary
               ? { backgroundColor: "#0077b6" }
               : { backgroundColor: "white" },
           ]}
@@ -50,7 +46,7 @@ const RatingBinaryInput = ({ title }) => {
           <Text
             style={[
               styles.ratingNumber,
-              binaryNo ? { color: "white" } : { color: "black" },
+              !binary ? { color: "white" } : { color: "black" },
             ]}
           >
             No
@@ -73,8 +69,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginTop: 10,
   },
-  ratingTypeText: {
-    fontFamily: "ABold",
+  title: {
+    fontFamily: "ARegular",
     fontSize: 17,
     marginLeft: 20,
   },

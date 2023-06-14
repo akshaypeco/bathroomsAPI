@@ -18,8 +18,10 @@ import app from "../../../firebase";
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSignUp = () => {
+    setIsLoading(true);
     createUserWithEmailAndPassword(getAuth(app), email, "password")
       .then((userCredentials) => {
         const user = userCredentials.user;
@@ -36,6 +38,7 @@ const LoginScreen = () => {
   };
 
   const handleLogIn = () => {
+    setIsLoading(true);
     signInWithEmailAndPassword(getAuth(app), email, "password")
       .then((userCredentials) => {
         const user = userCredentials.user;
@@ -76,14 +79,23 @@ const LoginScreen = () => {
         </View>
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={handleLogIn}>
-          <Text style={styles.buttonText}>Login</Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleLogIn}
+          disabled={isLoading ? true : false}
+        >
+          <Text style={styles.buttonText}>
+            {isLoading ? "Logging in..." : "Log in"}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.button, styles.buttonOutline]}
           onPress={handleSignUp}
+          disabled={isLoading ? true : false}
         >
-          <Text style={styles.buttonOutlineText}>Register</Text>
+          <Text style={styles.buttonOutlineText}>
+            {isLoading ? "Registering..." : "Register"}
+          </Text>
         </TouchableOpacity>
       </View>
       {error ? (

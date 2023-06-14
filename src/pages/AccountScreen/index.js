@@ -1,11 +1,31 @@
-import { Pressable, SafeAreaView, StyleSheet, Text, View } from "react-native";
-import React from "react";
+import {
+  Pressable,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+  ActivityIndicator,
+} from "react-native";
+import React, { useEffect, useState } from "react";
 import { getAuth, signOut } from "firebase/auth";
 import { useAuth } from "../../hooks/useAuth";
+import { getUserReviews } from "../../../firebase";
 
 const AccountScreen = () => {
-  const { user } = useAuth();
   const auth = getAuth();
+  const { user } = useAuth();
+
+  const [reviews, setReviews] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getUserReviews(user.uid).catch((e) => alert(e));
+      setReviews(data);
+      console.log(data);
+    };
+    fetchData();
+  }, [user]);
 
   return (
     <SafeAreaView style={styles.root}>
@@ -24,22 +44,50 @@ const AccountScreen = () => {
         <Pressable
           style={styles.logOutContainer}
           onPress={() => {
-            signOut(auth);
+            setIsLoading(true);
+            setTimeout(function () {
+              signOut(auth);
+            }, 200);
           }}
+          disabled={isLoading ? true : false}
         >
-          <Text style={{ fontFamily: "ARegular", fontSize: 18, color: "red" }}>
-            Log out
+          <Text style={{ fontFamily: "ARegular", fontSize: 16, color: "red" }}>
+            {isLoading ? "Logging out..." : "Log out"}
           </Text>
         </Pressable>
       </View>
-      <View>
-        <Text style={styles.statsHeader}>Stats</Text>
-        <Text style={styles.statsText}>Comments: 0</Text>
-        <Text style={styles.statsText}>Reviews: 0</Text>
-        <Text style={styles.statsText}>Account created in 2023</Text>
-      </View>
       <View style={{ marginTop: 20 }}>
         <Text style={styles.statsHeader}>Your Reviews</Text>
+        <View>
+          {reviews?.map(function (item) {
+            return (
+              <View key={item.id} style={styles.reviewContainer}>
+                <Text style={styles.name}>{item.name}</Text>
+                <Text style={styles.city}>{item.city}</Text>
+                <View style={{ flexDirection: "row", marginTop: 5 }}>
+                  <Text style={styles.stocked}>Stocked: {item.is_stocked}</Text>
+                  <Text style={styles.clean}>Clean: {item.is_clean}</Text>
+                  <Text style={styles.wait}>Wait: {item.wait_time}</Text>
+                </View>
+                <View>
+                  {item.comment ? (
+                    <Text
+                      style={[
+                        styles.comment,
+                        { fontFamily: "ABold", color: "grey" },
+                      ]}
+                    >
+                      Comment:{" "}
+                      <Text style={[styles.comment, { color: "black" }]}>
+                        {item.comment}
+                      </Text>
+                    </Text>
+                  ) : null}
+                </View>
+              </View>
+            );
+          })}
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -77,4 +125,15 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     marginTop: 6,
   },
+  reviewContainer: {
+    backgroundColor: "#f5f3f4",
+    margin: 10,
+    padding: 10,
+  },
+  name: { fontFamily: "ABold", fontSize: 16 },
+  city: { fontFamily: "ARegular", fontSize: 15 },
+  stocked: { fontFamily: "ARegular", marginRight: 10, fontSize: 14 },
+  clean: { fontFamily: "ARegular", marginRight: 10, fontSize: 14 },
+  wait: { fontFamily: "ARegular", fontSize: 14 },
+  comment: { fontFamily: "ARegular", fontSize: 14, marginTop: 5 },
 });

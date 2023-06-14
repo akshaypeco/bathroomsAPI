@@ -1,4 +1,14 @@
 import { initializeApp } from "firebase/app";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  collection,
+  addDoc,
+  getDocs,
+  where,
+  query,
+} from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDmNwysNvrrC4rwOnDbg8yw5qUl-aOLaA4",
@@ -10,5 +20,24 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+const db = getFirestore();
+
+export async function submitReview(review) {
+  const res = await addDoc(collection(db, "reviews"), review);
+}
+
+export async function getUserReviews(uid) {
+  var res = [];
+  const reviewsRef = collection(db, "reviews");
+  const q = await query(reviewsRef, where("uid", "==", uid));
+
+  const snapshot = await getDocs(q);
+  snapshot.forEach((doc) => {
+    // doc.data() is never undefined for query doc snapshots
+    res.push(doc.data());
+  });
+
+  return res;
+}
 
 export default app;

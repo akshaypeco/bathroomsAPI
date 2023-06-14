@@ -21,7 +21,6 @@ export default function HomeScreen({ navigation }) {
   const [currLoc, setCurrLoc] = useState();
   const [currMarkerLoc, setcurrMarkerLoc] = useState(null);
   const [currRegion, setCurrRegion] = useState([]);
-  const [icon, setIcon] = useState("black");
   const [markerData, setMarkerData] = useState([]);
 
   useEffect(() => {
@@ -83,7 +82,6 @@ export default function HomeScreen({ navigation }) {
   const snapToUser = () => {
     getCurrLoc();
     mapRef.current.animateToRegion(currLoc, 800);
-    setIcon("#5588ff");
   };
 
   const onRegionChangeComplete = (region) => {
@@ -104,11 +102,9 @@ export default function HomeScreen({ navigation }) {
         style={styles.map}
         ref={mapRef}
         initialRegion={currLoc}
+        showsUserLocation={true}
         onRegionChangeComplete={(region) => {
           onRegionChangeComplete(region);
-        }}
-        onRegionChange={() => {
-          setIcon("black");
         }}
       >
         {markerData.map((hit) => (
@@ -205,7 +201,7 @@ export default function HomeScreen({ navigation }) {
             </Callout>
           </Marker>
         ))}
-        {currMarkerLoc ? (
+        {/* {currMarkerLoc ? (
           <Marker
             coordinate={{
               longitude: currMarkerLoc.longitude,
@@ -214,16 +210,16 @@ export default function HomeScreen({ navigation }) {
           >
             <View style={styles.currentLocationBlueDot}></View>
           </Marker>
-        ) : null}
+        ) : null} */}
       </MapView>
-      <Pressable
+      <TouchableOpacity
         style={styles.currentLocationButton}
         onPressIn={() => {
           snapToUser();
         }}
       >
-        <FontAwesome name="location-arrow" size={35} color={icon} />
-      </Pressable>
+        <FontAwesome name="location-arrow" size={30} color={"black"} />
+      </TouchableOpacity>
       {currRegion.longitudeDelta > 0.18 || currRegion.latitudeDelta > 0.18 ? (
         <View style={[styles.searchAreaButton]}>
           <Text style={{ fontSize: 17, color: "#e63946" }}>
