@@ -3,12 +3,10 @@ import { Text, View, StyleSheet, StatusBar } from "react-native";
 import * as SplashScreen from "expo-splash-screen";
 import { loadAsync } from "expo-font";
 import * as Location from "expo-location";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import RootNavigation from "./src/navigation";
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
-const Stack = createNativeStackNavigator();
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);

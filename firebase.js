@@ -40,4 +40,31 @@ export async function getUserReviews(uid) {
   return res;
 }
 
+export async function getBathroomReviews(id) {
+  var res = [];
+  const reviewsRef = collection(db, "reviews");
+  const q = await query(reviewsRef, where("id", "==", id));
+
+  const snapshot = await getDocs(q);
+  snapshot.forEach((doc) => {
+    // doc.data() is never undefined for query doc snapshots
+    res.push(doc.data());
+  });
+
+  return res;
+}
+// export async function getUserFavorites(uid) {
+//   var res = [];
+//   const reviewsRef = collection(db, "favorites");
+//   const q = await query(reviewsRef, where("uid", "==", uid));
+
+//   const snapshot = await getDocs(q);
+//   snapshot.forEach((doc) => {
+//     // doc.data() is never undefined for query doc snapshots
+//     res.push(doc.data());
+//   });
+
+//   return res;
+// }
+
 export default app;

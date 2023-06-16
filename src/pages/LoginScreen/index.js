@@ -18,16 +18,18 @@ import app from "../../../firebase";
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const handleSignUp = () => {
-    setIsLoading(true);
+    setIsRegistering(true);
     createUserWithEmailAndPassword(getAuth(app), email, "password")
       .then((userCredentials) => {
         const user = userCredentials.user;
         console.log("Registered with: ", user.email);
       })
       .catch((e) => {
+        setIsRegistering(false);
         if (e.code == "auth/invalid-email") {
           setError("Please register with a valid email.");
         }
@@ -38,13 +40,14 @@ const LoginScreen = () => {
   };
 
   const handleLogIn = () => {
-    setIsLoading(true);
+    setIsLoggingIn(true);
     signInWithEmailAndPassword(getAuth(app), email, "password")
       .then((userCredentials) => {
         const user = userCredentials.user;
         console.log("Logged in with: ", user.email);
       })
       .catch((e) => {
+        setIsLoggingIn(false);
         if (e.code == "auth/invalid-email") {
           setError("Invalid email.");
         }
@@ -82,19 +85,19 @@ const LoginScreen = () => {
         <TouchableOpacity
           style={styles.button}
           onPress={handleLogIn}
-          disabled={isLoading ? true : false}
+          disabled={isLoggingIn ? true : false}
         >
           <Text style={styles.buttonText}>
-            {isLoading ? "Logging in..." : "Log in"}
+            {isLoggingIn ? "Logging in..." : "Log in"}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.button, styles.buttonOutline]}
           onPress={handleSignUp}
-          disabled={isLoading ? true : false}
+          disabled={isRegistering ? true : false}
         >
           <Text style={styles.buttonOutlineText}>
-            {isLoading ? "Registering..." : "Register"}
+            {isRegistering ? "Registering..." : "Register"}
           </Text>
         </TouchableOpacity>
       </View>

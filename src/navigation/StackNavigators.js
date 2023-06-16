@@ -28,11 +28,11 @@ const HomeScreenNavigator = () => {
         component={RatingSubmittedScreen}
         options={{ presentation: "fullScreenModal" }}
       />
-      <HomeStack.Screen
+      {/* <HomeStack.Screen
         name="FavoritedSuccess"
         component={FavoritedSuccessScreen}
         options={{ presentation: "modal" }}
-      />
+      /> */}
     </HomeStack.Navigator>
   );
 };

@@ -62,8 +62,10 @@ export default function HomeScreen({ navigation }) {
           setMarkerData(res.data);
         })
         .catch((e) => alert(e))
-        .finally(setIsLoading(false));
-    }, 250);
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }, 50);
   };
 
   const getCurrLoc = async () => {
@@ -93,7 +95,7 @@ export default function HomeScreen({ navigation }) {
 
   const onRegionChangeComplete = (region) => {
     setCurrRegion(region);
-    if (region.latitudeDelta <= 0.18 && region.longitudeDelta <= 0.18) {
+    if (region.latitudeDelta <= 0.4 && region.longitudeDelta <= 0.4) {
       getData(
         region.latitude,
         region.longitude,
@@ -227,7 +229,7 @@ export default function HomeScreen({ navigation }) {
       >
         <FontAwesome name="location-arrow" size={30} color={"black"} />
       </TouchableOpacity>
-      {currRegion.longitudeDelta > 0.18 || currRegion.latitudeDelta > 0.18 ? (
+      {currRegion.longitudeDelta > 0.4 || currRegion.latitudeDelta > 0.4 ? (
         <View style={[styles.searchAreaButton]}>
           <Text style={{ fontSize: 17, color: "#e63946" }}>
             Zoom in to search
@@ -237,7 +239,7 @@ export default function HomeScreen({ navigation }) {
       {isLoading ? (
         <View
           style={[
-            styles.searchAreaButton,
+            styles.loadingIndicator,
             { flexDirection: "row", borderRadius: 100 },
           ]}
         >
@@ -298,6 +300,22 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: Dimensions.get("window").height * 0.02,
     height: Dimensions.get("window").height * 0.05,
+    alignSelf: "center",
+    borderRadius: 40,
+    paddingHorizontal: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
+    shadowColor: "#171717",
+    shadowOffset: { width: -2, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+  },
+  loadingIndicator: {
+    position: "absolute",
+    bottom: Dimensions.get("window").height * 0.02,
+    height: 50,
+    width: 50,
     alignSelf: "center",
     borderRadius: 40,
     paddingHorizontal: 20,

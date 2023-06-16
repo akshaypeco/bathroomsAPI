@@ -6,35 +6,69 @@ import {
   Text,
   TouchableOpacity,
   View,
+  RefreshControl,
+  Alert,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MapView, { Marker } from "react-native-maps";
+import * as Clipboard from "expo-clipboard";
 import { Feather } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
+import { getBathroomReviews } from "../../../firebase";
 
 const BathroomDetailsScreen = ({ navigation, route }) => {
   const { hit } = route.params;
-  const [isFavorited, setIsFavorited] = useState(false);
+  const [reviews, setReviews] = useState();
+  const [refreshing, setRefreshing] = useState(false);
+  // const [isFavorited, setIsFavorited] = useState(false);
 
-  const handleFavorited = () => {
-    setIsFavorited(!isFavorited);
-    if (!isFavorited) {
-      navigation.navigate("FavoritedSuccess");
+  // const handleFavorited = () => {
+  //   setIsFavorited(!isFavorited);
+  //   if (!isFavorited) {
+  //     navigation.navigate("FavoritedSuccess");
+  //   }
+  // };
+
+  useEffect(() => {
+    async function fetchData() {
+      await getBathroomReviews(hit.id).then((res) => {
+        setReviews(res);
+        console.log(res);
+        setRefreshing(false);
+      });
     }
+    fetchData().catch((e) => {
+      console.log(e);
+    });
+  }, [hit, refreshing]);
+
+  const copyToClipboard = async () => {
+    await Clipboard.setStringAsync(
+      hit.street + ", " + hit.city + " " + hit.state
+    ).then(Alert.alert("Address copied!"));
   };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              setRefreshing(true);
+            }}
+          />
+        }
+      >
         <View style={styles.titleAndFavoritesContainer}>
           <View style={{ width: "80%" }}>
             <Text style={styles.bathroomTitle}>{hit.name}</Text>
             <Text style={styles.updatedDate}>
-              Last changed in {hit.updated_at.substring(0, 4)}
+              Edited in {hit.updated_at.substring(0, 4)}
             </Text>
-            <Text style={styles.reportIssue}>Report an issue</Text>
+            <Text style={styles.reportProblem}>Report a problem</Text>
           </View>
-          <View>
+          {/* <View>
             <Pressable onPress={handleFavorited}>
               <MaterialIcons
                 name={isFavorited ? "favorite" : "favorite-border"}
@@ -43,7 +77,7 @@ const BathroomDetailsScreen = ({ navigation, route }) => {
                 style={{ marginRight: 20 }}
               />
             </Pressable>
-          </View>
+          </View> */}
         </View>
         <View
           style={{ flexDirection: "row", marginHorizontal: 20, marginTop: 10 }}
@@ -106,12 +140,22 @@ const BathroomDetailsScreen = ({ navigation, route }) => {
           </MapView>
         </View>
 
-        <View style={styles.addressContainer}>
+        <Pressable style={styles.addressContainer} onPress={copyToClipboard}>
           <Text style={{ fontFamily: "ARegular", fontSize: 16 }}>Address</Text>
           <Text style={styles.address}>
             {hit.street}, {hit.city} {hit.state}
           </Text>
-        </View>
+          <View style={{ marginTop: 5 }}>
+            <Text
+              style={{
+                fontFamily: "ABold",
+                fontSize: 13,
+              }}
+            >
+              Copy to clipboard
+            </Text>
+          </View>
+        </Pressable>
         <View
           style={{ flexDirection: "row", marginHorizontal: 20, marginTop: 10 }}
         >
@@ -171,25 +215,142 @@ const BathroomDetailsScreen = ({ navigation, route }) => {
           <Text style={{ fontFamily: "ARegular", fontSize: 16, color: "grey" }}>
             Reviews
           </Text>
-          <Pressable
-            onPress={() => {
-              navigation.navigate("AddRating", { hit });
-            }}
-          >
-            <Text
-              style={{
-                fontFamily: "ABold",
-                fontSize: 17,
-                color: "#0077b6",
-                marginTop: 5,
-                textAlign: "center",
+          {reviews?.map(function (item, index) {
+            if (item.approved) {
+              return (
+                <View style={styles.reviews} key={index}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-evenly",
+                      marginVertical: 5,
+                      alignItems: "center",
+                    }}
+                  >
+                    <View
+                      style={{
+                        backgroundColor: "white",
+                        padding: 5,
+                        borderRadius: 10,
+                      }}
+                    >
+                      {/* <Text
+                        style={{
+                          fontFamily: "ARegular",
+                          fontSize: 14,
+                        }}
+                      >
+                        Submitted
+                      </Text> */}
+                      <Text
+                        style={{ fontFamily: "ABold", textAlign: "center" }}
+                      >
+                        {item.created_at.substring(5, 7)}
+                        {" / "}
+                        {item.created_at.substring(0, 4)}
+                      </Text>
+                    </View>
+                    <View>
+                      <Text
+                        style={{
+                          fontFamily: "ABold",
+                          fontSize: 14,
+                        }}
+                      >
+                        Clean
+                      </Text>
+                      <Text
+                        style={{ fontFamily: "ARegular", textAlign: "center" }}
+                      >
+                        <Text style={{ fontSize: 18 }}>{item.is_clean}</Text>/5
+                      </Text>
+                    </View>
+                    <View>
+                      <Text
+                        style={{
+                          fontFamily: "ABold",
+                          fontSize: 14,
+                        }}
+                      >
+                        Short wait
+                      </Text>
+                      <Text
+                        style={{ fontFamily: "ARegular", textAlign: "center" }}
+                      >
+                        <Text style={{ fontSize: 18 }}>{item.wait_time}</Text>/5
+                      </Text>
+                    </View>
+                    <View>
+                      <Text
+                        style={{
+                          fontFamily: "ABold",
+                          fontSize: 14,
+                        }}
+                      >
+                        Stocked
+                      </Text>
+                      <Text
+                        style={{ fontFamily: "ARegular", textAlign: "center" }}
+                      >
+                        <Text style={{ fontSize: 18 }}>{item.is_stocked}</Text>
+                        /5
+                      </Text>
+                    </View>
+                  </View>
+                  <Text
+                    style={{
+                      fontFamily: "ABold",
+                      color: "grey",
+                      paddingLeft: 10,
+                    }}
+                  >
+                    Comment
+                  </Text>
+                  <Text
+                    style={{
+                      fontFamily: "ARegular",
+                      paddingHorizontal: 10,
+                      paddingBottom: 10,
+                    }}
+                  >
+                    {item.comment}
+                  </Text>
+                </View>
+              );
+            }
+          })}
+          {reviews?.length == 0 && (
+            <Pressable
+              onPress={() => {
+                navigation.navigate("AddRating", { hit });
               }}
             >
-              Be the first to review this bathroom
-            </Text>
-          </Pressable>
-          {/* <View style={styles.reviews}></View> */}
+              <Text
+                style={{
+                  fontFamily: "ABold",
+                  fontSize: 17,
+                  color: "#0077b6",
+                  marginTop: 5,
+                  textAlign: "center",
+                }}
+              >
+                Be the first to review this bathroom
+              </Text>
+            </Pressable>
+          )}
+          <Text
+            style={{
+              fontFamily: "ARegular",
+              fontSize: 16,
+              textAlign: "center",
+              marginTop: 5,
+              color: "grey",
+            }}
+          >
+            Only approved reviews are visible.
+          </Text>
         </View>
+        <View style={{ paddingBottom: 100 }}></View>
       </ScrollView>
       <TouchableOpacity
         style={styles.reviewButtonContainer}
@@ -219,7 +380,7 @@ const styles = StyleSheet.create({
   map: {
     width: "90%",
     height: 200,
-    borderRadius: 15,
+    borderRadius: 5,
   },
   bathroomTitle: {
     fontFamily: "ABold",
@@ -227,7 +388,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginTop: 10,
   },
-  reportIssue: {
+  reportProblem: {
     fontFamily: "ABold",
     color: "grey",
     textDecorationLine: "underline",
@@ -279,7 +440,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#b5e48c",
     paddingVertical: 5,
     paddingHorizontal: 8,
-    borderRadius: 10,
+    borderRadius: 5,
     marginRight: 10,
   },
   tagText: { fontFamily: "ARegular", fontSize: 17 },
@@ -301,10 +462,10 @@ const styles = StyleSheet.create({
   },
   reviewContainer: { marginTop: 15, marginHorizontal: 20 },
   reviews: {
-    borderWidth: 1,
-    borderColor: "gray",
-    height: 200,
-    marginTop: 5,
+    backgroundColor: "#f5f3f4",
+    marginTop: 6,
+    padding: 6,
+    borderRadius: 5,
   },
   reviewButtonContainer: {
     backgroundColor: "#0077b6",

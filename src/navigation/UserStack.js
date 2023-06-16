@@ -31,7 +31,7 @@ export default function UserStack() {
             ),
           }}
         />
-        <Tab.Screen
+        {/* <Tab.Screen
           name="Favorites"
           component={FavoritesScreen}
           options={{
@@ -39,7 +39,7 @@ export default function UserStack() {
               <MaterialIcons name="favorite" size={size} color={color} />
             ),
           }}
-        />
+        /> */}
         <Tab.Screen
           name="Account"
           component={AccountScreen}

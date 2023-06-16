@@ -23,9 +23,9 @@ const AddRatingScreen = ({ navigation, route }) => {
   const [clean, setClean] = useState(0);
   const [wait, setWait] = useState(0);
   const [stocked, setStocked] = useState(0);
-  const [changing, setChanging] = useState(false);
-  const [gender, setGender] = useState(false);
-  const [accessible, setAccessible] = useState(false);
+  // const [changing, setChanging] = useState(false);
+  // const [gender, setGender] = useState(false);
+  // const [accessible, setAccessible] = useState(false);
   const [comment, setComment] = useState("");
 
   const handleSubmit = () => {
@@ -35,12 +35,14 @@ const AddRatingScreen = ({ navigation, route }) => {
       is_clean: clean,
       wait_time: wait,
       is_stocked: stocked,
-      changing_table: changing,
-      unisex: gender,
-      accessible: accessible,
+      // changing_table: changing,
+      // unisex: gender,
+      // accessible: accessible,
       comment: comment,
       approved: false,
       uid: user.uid,
+      review_month_created: new Date().getMonth() + 1,
+      review_year_created: new Date().getFullYear(),
     };
     setTimeout(async function () {
       await submitReview(data)
@@ -77,20 +79,22 @@ const AddRatingScreen = ({ navigation, route }) => {
         <View>
           <Text style={styles.title}>{hit.name}</Text>
         </View>
-        <RatingInput
-          title="Comment"
-          placeholder={"Optional"}
-          handleInput={setComment}
-        />
+
         <RatingNumberInput title="Clean?" handleRating={setClean} />
         <RatingNumberInput title="Short wait?" handleRating={setWait} />
         <RatingNumberInput
           title="Well-stocked (toilet paper, etc.)?"
-          handleRating={setStocked}
+          hand
+          leRating={setStocked}
         />
-        <RatingBinaryInput title="Changing table" handleRating={setChanging} />
+        <RatingInput
+          title="Additional comments"
+          placeholder={"Optional"}
+          handleInput={setComment}
+        />
+        {/* <RatingBinaryInput title="Changing table" handleRating={setChanging} />
         <RatingBinaryInput title="Unisex" handleRating={setGender} />
-        <RatingBinaryInput title="Accessible" handleRating={setAccessible} />
+        <RatingBinaryInput title="Accessible" handleRating={setAccessible} /> */}
         {/* <View style={styles.ratingOptionsContainer}>
         <TouchableOpacity style={styles.ratingNumberContainer}>
           <Feather name="thumbs-up" size={32} color="#008000" />
