@@ -90,7 +90,9 @@ const AccountScreen = () => {
                     >
                       <Text style={styles.name}>{item.name}</Text>
                       {item.approved ? (
-                        <Text style={{ fontFamily: "ARegular", color: "grey" }}>
+                        <Text
+                          style={{ fontFamily: "ARegular", color: "#3a8525" }}
+                        >
                           Approved
                         </Text>
                       ) : (

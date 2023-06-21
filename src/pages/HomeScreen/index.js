@@ -11,11 +11,12 @@ import {
 } from "react-native";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
-import { FontAwesome5 } from "@expo/vector-icons";
 import { Foundation } from "@expo/vector-icons";
 import * as Location from "expo-location";
 import MapView, { Callout, Marker } from "react-native-maps";
 import axios from "axios";
+import getDistance from "geolib/es/getPreciseDistance";
+import { convertDistance } from "geolib";
 
 export default function HomeScreen({ navigation }) {
   const mapRef = useRef(null);
@@ -127,14 +128,56 @@ export default function HomeScreen({ navigation }) {
             <Foundation name="marker" size={24} color="#0077b6" />
             <Callout
               onPress={() => {
-                navigation.navigate("BathroomDetails", { hit });
+                navigation.navigate("BathroomDetails", {
+                  hit,
+                  latitude: currLoc.latitude,
+                  longitude: currLoc.longitude,
+                });
               }}
               style={styles.calloutContainer}
             >
               <View style={styles.calloutViewContainer}>
                 <View>
-                  <Text style={styles.title}>{hit.name}</Text>
-                  <Text style={styles.street}>{hit.street}</Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: 130,
+                        paddingRight: 5,
+                      }}
+                    >
+                      <Text style={styles.title}>{hit.name}</Text>
+                    </View>
+                    <View>
+                      <Text style={styles.distance}>
+                        {convertDistance(
+                          getDistance(
+                            {
+                              latitude: hit.latitude,
+                              longitude: hit.longitude,
+                            },
+                            {
+                              latitude: currLoc.latitude,
+                              longitude: currLoc.longitude,
+                            }
+                          ),
+                          "mi"
+                        ).toFixed(2)}{" "}
+                        mi
+                      </Text>
+                    </View>
+                  </View>
+                  <View
+                    style={{
+                      width: 160,
+                      paddingRight: 5,
+                    }}
+                  >
+                    <Text style={styles.street}>{hit.street}</Text>
+                  </View>
                   {/* <View>
                     {(hit.upvote > 0 || hit.downvote > 0) &&
                     hit.upvote / (hit.upvote + hit.downvote) < 0.5 ? (
@@ -338,8 +381,9 @@ const styles = StyleSheet.create({
     marginRight: 5,
     borderRadius: 5,
   },
-  title: { fontFamily: "ABold", fontSize: 16 },
-  street: { fontFamily: "Medium", fontSize: 14, color: "grey" },
+  title: { fontFamily: "ABold", fontSize: 15.5 },
+  street: { fontFamily: "ARegular", fontSize: 13, color: "grey" },
+  distance: { fontFamily: "ARegular", fontSize: 14, color: "grey" },
   lowRatingContainer: {
     backgroundColor: "#ddbea9",
     justifyContent: "center",

@@ -13,11 +13,16 @@ import React, { useState, useEffect } from "react";
 import MapView, { Marker } from "react-native-maps";
 import * as Clipboard from "expo-clipboard";
 import { Feather } from "@expo/vector-icons";
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 import { getBathroomReviews } from "../../../firebase";
+import { convertDistance, getDistance } from "geolib";
 
 const BathroomDetailsScreen = ({ navigation, route }) => {
   const { hit } = route.params;
+  const latitude = route.params.latitude;
+  const longitude = route.params.longitude;
   const [reviews, setReviews] = useState();
   const [refreshing, setRefreshing] = useState(false);
   // const [isFavorited, setIsFavorited] = useState(false);
@@ -61,12 +66,41 @@ const BathroomDetailsScreen = ({ navigation, route }) => {
         }
       >
         <View style={styles.titleAndFavoritesContainer}>
-          <View style={{ width: "80%" }}>
-            <Text style={styles.bathroomTitle}>{hit.name}</Text>
-            <Text style={styles.updatedDate}>
-              Edited in {hit.updated_at.substring(0, 4)}
-            </Text>
-            <Text style={styles.reportProblem}>Report a problem</Text>
+          <View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
+              <View style={{ width: "70%" }}>
+                <Text style={styles.bathroomTitle}>{hit.name}</Text>
+              </View>
+              <View>
+                <Text style={styles.distance}>
+                  {convertDistance(
+                    getDistance(
+                      {
+                        latitude: hit.latitude,
+                        longitude: hit.longitude,
+                      },
+                      {
+                        latitude: latitude,
+                        longitude: longitude,
+                      }
+                    ),
+                    "mi"
+                  ).toFixed(1)}{" "}
+                  miles away
+                </Text>
+              </View>
+            </View>
+            <View style={{ flexDirection: "row" }}>
+              <Text style={styles.updatedDate}>
+                Edited in {hit.updated_at.substring(0, 4)}
+              </Text>
+              <Text style={styles.reportProblem}>Report a problem</Text>
+            </View>
           </View>
           {/* <View>
             <Pressable onPress={handleFavorited}>
@@ -79,7 +113,7 @@ const BathroomDetailsScreen = ({ navigation, route }) => {
             </Pressable>
           </View> */}
         </View>
-        <View
+        {/* <View
           style={{ flexDirection: "row", marginHorizontal: 20, marginTop: 10 }}
         >
           {hit.upvote ? (
@@ -104,23 +138,22 @@ const BathroomDetailsScreen = ({ navigation, route }) => {
               />
             </View>
           ) : null}
-          {/* {hit.upvote == 0 && hit.downvote == 0 ? (
-            <Pressable
-              onPress={() => {
-                navigation.navigate("AddRating", { hit });
-              }}
-            >
-              <Text
-                style={{
-                  fontFamily: "ABold",
-                  fontSize: 15.5,
-                  color: "#0077b6",
-                }}
-              >
-                Be the first to review this bathroom
-              </Text>
-            </Pressable>
-          ) : null} */}
+        </View> */}
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginLeft: 20,
+            marginTop: 5,
+          }}
+        >
+          <FontAwesome name="star" size={18} color="black" />
+          <Text style={{ fontFamily: "ARegular", fontSize: 14, marginLeft: 3 }}>
+            4.2
+          </Text>
+          <Text style={{ fontFamily: "ARegular", fontSize: 14, marginLeft: 2 }}>
+            (2)
+          </Text>
         </View>
         <View style={styles.mapContainer}>
           <MapView
@@ -234,14 +267,6 @@ const BathroomDetailsScreen = ({ navigation, route }) => {
                         borderRadius: 10,
                       }}
                     >
-                      {/* <Text
-                        style={{
-                          fontFamily: "ARegular",
-                          fontSize: 14,
-                        }}
-                      >
-                        Submitted
-                      </Text> */}
                       <Text
                         style={{ fontFamily: "ABold", textAlign: "center" }}
                       >
@@ -384,15 +409,14 @@ const styles = StyleSheet.create({
   },
   bathroomTitle: {
     fontFamily: "ABold",
-    fontSize: 25,
+    fontSize: 21,
     marginLeft: 20,
-    marginTop: 10,
   },
   reportProblem: {
     fontFamily: "ABold",
     color: "grey",
     textDecorationLine: "underline",
-    marginLeft: 20,
+    marginLeft: 10,
     marginTop: 3,
   },
   upvoteContainer: {
@@ -421,8 +445,9 @@ const styles = StyleSheet.create({
   },
   updatedDate: {
     fontFamily: "ARegular",
-    fontSize: 16,
+    fontSize: 15,
     marginLeft: 20,
+    marginTop: 3,
     color: "grey",
   },
   addressContainer: {
@@ -435,6 +460,13 @@ const styles = StyleSheet.create({
   address: {
     fontFamily: "ARegular",
     fontSize: 17,
+  },
+  distance: {
+    fontFamily: "ARegular",
+    fontSize: 15,
+    marginTop: 3,
+    color: "grey",
+    textAlign: "right",
   },
   tagContainer: {
     backgroundColor: "#b5e48c",
@@ -462,7 +494,9 @@ const styles = StyleSheet.create({
   },
   reviewContainer: { marginTop: 15, marginHorizontal: 20 },
   reviews: {
-    backgroundColor: "#f5f3f4",
+    borderColor: "#e5e5e5",
+    borderBottomWidth: 1,
+    borderTopWidth: 1,
     marginTop: 6,
     padding: 6,
     borderRadius: 5,
