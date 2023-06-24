@@ -12,6 +12,9 @@ import {
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import { Foundation } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
+
 import * as Location from "expo-location";
 import MapView, { Callout, Marker } from "react-native-maps";
 import axios from "axios";
@@ -66,7 +69,7 @@ export default function HomeScreen({ navigation }) {
         .finally(() => {
           setIsLoading(false);
         });
-    }, 50);
+    }, 0);
   };
 
   const getCurrLoc = async () => {
@@ -141,6 +144,7 @@ export default function HomeScreen({ navigation }) {
                   <View
                     style={{
                       flexDirection: "row",
+                      justifyContent: "space-between",
                     }}
                   >
                     <View
@@ -165,7 +169,7 @@ export default function HomeScreen({ navigation }) {
                             }
                           ),
                           "mi"
-                        ).toFixed(2)}{" "}
+                        ).toFixed(1)}{" "}
                         mi
                       </Text>
                     </View>
@@ -265,6 +269,51 @@ export default function HomeScreen({ navigation }) {
         ) : null} */}
       </MapView>
       <TouchableOpacity
+        style={styles.unisexButton}
+        // onPressIn={() => {
+        //   snapToUser();
+        // }}
+      >
+        <FontAwesome
+          name="genderless"
+          size={30}
+          color="black"
+          style={{ marginLeft: 2, marginBottom: 1 }}
+        />
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.addBathroomButton}
+        onPressIn={() => {
+          navigation.navigate("AddBathroom", {
+            latitude: currLoc.latitude,
+            longitude: currLoc.longitude,
+          });
+        }}
+      >
+        <Ionicons
+          name="ios-add-outline"
+          size={24}
+          color="black"
+          style={{ marginLeft: 2 }}
+        />
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.accessibleButton}
+        // onPressIn={() => {
+        //   snapToUser();
+        // }}
+      >
+        <MaterialIcons name="accessible-forward" size={24} color="black" />
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.changingTableButton}
+        // onPressIn={() => {
+        //   snapToUser();
+        // }}
+      >
+        <MaterialIcons name="baby-changing-station" size={24} color="black" />
+      </TouchableOpacity>
+      <TouchableOpacity
         style={styles.currentLocationButton}
         onPressIn={() => {
           snapToUser();
@@ -279,19 +328,16 @@ export default function HomeScreen({ navigation }) {
           </Text>
         </View>
       ) : null}
-      {isLoading ? (
+      {/* {isLoading ? (
         <View
           style={[
             styles.loadingIndicator,
             { flexDirection: "row", borderRadius: 100 },
           ]}
         >
-          <ActivityIndicator color={"black"} size={15} />
-          {/* <Text style={{ fontSize: 17, color: "black", marginLeft: 10 }}>
-            Loading
-          </Text> */}
+          <ActivityIndicator color={"black"} size={8} />
         </View>
-      ) : null}
+      ) : null} */}
     </View>
   );
 }
@@ -307,13 +353,73 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
+  unisexButton: {
+    position: "absolute",
+    top: Dimensions.get("window").height * 0.06,
+    right: 20,
+    backgroundColor: "white",
+    height: Dimensions.get("window").height * 0.06,
+    width: Dimensions.get("window").height * 0.06,
+    borderRadius: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#171717",
+    shadowOffset: { width: -2, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+  },
+  changingTableButton: {
+    position: "absolute",
+    top: Dimensions.get("window").height * 0.14,
+    right: 20,
+    backgroundColor: "white",
+    height: Dimensions.get("window").height * 0.06,
+    width: Dimensions.get("window").height * 0.06,
+    borderRadius: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#171717",
+    shadowOffset: { width: -2, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+  },
+  accessibleButton: {
+    position: "absolute",
+    top: Dimensions.get("window").height * 0.22,
+    right: 20,
+    backgroundColor: "white",
+    height: Dimensions.get("window").height * 0.06,
+    width: Dimensions.get("window").height * 0.06,
+    borderRadius: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#171717",
+    shadowOffset: { width: -2, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+  },
   currentLocationButton: {
     position: "absolute",
     bottom: Dimensions.get("window").height * 0.02,
-    left: Dimensions.get("window").width * 0.8,
+    right: 20,
     backgroundColor: "white",
     height: Dimensions.get("window").height * 0.065,
     width: Dimensions.get("window").height * 0.065,
+    borderRadius: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#171717",
+    shadowOffset: { width: -2, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+  },
+  addBathroomButton: {
+    position: "absolute",
+    bottom: Dimensions.get("window").height * 0.02,
+    left: 20,
+    backgroundColor: "white",
+    height: Dimensions.get("window").height * 0.06,
+    width: Dimensions.get("window").height * 0.06,
     borderRadius: 40,
     justifyContent: "center",
     alignItems: "center",
@@ -357,8 +463,8 @@ const styles = StyleSheet.create({
   loadingIndicator: {
     position: "absolute",
     bottom: Dimensions.get("window").height * 0.02,
-    height: 50,
-    width: 50,
+    height: 40,
+    width: 40,
     alignSelf: "center",
     borderRadius: 40,
     paddingHorizontal: 20,

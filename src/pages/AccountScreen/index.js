@@ -43,16 +43,7 @@ const AccountScreen = () => {
           />
         }
       >
-        <Text
-          style={{
-            fontFamily: "ABold",
-            fontSize: 24,
-            marginLeft: 15,
-            marginTop: 5,
-          }}
-        >
-          Account
-        </Text>
+        <Text style={styles.header}>Account</Text>
         <View>
           <Text style={styles.email}>{user?.email}</Text>
           <Pressable
@@ -139,6 +130,12 @@ export default AccountScreen;
 
 const styles = StyleSheet.create({
   root: { backgroundColor: "white", flex: 1 },
+  header: {
+    fontFamily: "ABold",
+    fontSize: 24,
+    marginLeft: 15,
+    marginTop: 5,
+  },
   email: {
     fontFamily: "ARegular",
     fontSize: 17,

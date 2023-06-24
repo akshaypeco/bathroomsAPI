@@ -466,7 +466,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     marginTop: 3,
     color: "grey",
-    textAlign: "right",
   },
   tagContainer: {
     backgroundColor: "#b5e48c",

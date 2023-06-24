@@ -144,9 +144,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   title: {
-    fontFamily: "ARegular",
-    fontSize: 23,
-    marginTop: 10,
+    fontFamily: "ABold",
+    fontSize: 22,
     marginBottom: 10,
     textAlign: "center",
     padding: 10,

@@ -5,6 +5,7 @@ import BathroomDetailsScreen from "../pages/BathroomDetailsScreen";
 import AddRatingScreen from "../pages/AddRatingScreen";
 import RatingSubmittedScreen from "../pages/RatingSubmittedScreen";
 import FavoritedSuccessScreen from "../pages/FavoritedSuccessScreen";
+import AddBathroomScreen from "../pages/AddBathroomScreen";
 
 const HomeStack = createNativeStackNavigator();
 
@@ -13,6 +14,11 @@ const HomeScreenNavigator = () => {
     <HomeStack.Navigator screenOptions={{ headerShown: false }}>
       <HomeStack.Group>
         <HomeStack.Screen name="Homescreen" component={HomeScreen} />
+        <HomeStack.Screen
+          name="AddBathroom"
+          component={AddBathroomScreen}
+          options={{ presentation: "fullScreenModal" }}
+        />
         <HomeStack.Screen
           name="BathroomDetails"
           component={BathroomDetailsScreen}

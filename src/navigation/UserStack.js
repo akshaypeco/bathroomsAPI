@@ -6,7 +6,9 @@ import { HomeScreenNavigator } from "./StackNavigators";
 import { Entypo } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { Foundation } from "@expo/vector-icons";
 import { NavigationContainer } from "@react-navigation/native";
+import ListScreen from "../pages/ListScreen";
 
 const Tab = createBottomTabNavigator();
 
@@ -40,6 +42,15 @@ export default function UserStack() {
             ),
           }}
         /> */}
+        <Tab.Screen
+          name="List"
+          component={ListScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Foundation name="list" size={size} color={color} />
+            ),
+          }}
+        />
         <Tab.Screen
           name="Account"
           component={AccountScreen}
