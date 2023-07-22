@@ -8,6 +8,7 @@ import {
   getDocs,
   where,
   query,
+  setDoc,
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -24,6 +25,47 @@ const db = getFirestore();
 
 export async function submitReview(review) {
   const res = await addDoc(collection(db, "reviews"), review);
+}
+
+export async function addUser(uid) {
+  const userEntry = {
+    username: "",
+    uid: uid,
+  };
+  const userRef = doc(db, "users", uid);
+  await setDoc(userRef, userEntry);
+}
+
+export async function addUsername(uid, username) {
+  const userRef = doc(db, "users", uid);
+  const userSnapshot = await getDoc(userRef);
+
+  if (!userSnapshot.exists() || !userSnapshot.data().username) {
+    const userEntry = {
+      username: username,
+      uid: uid,
+    };
+    await setDoc(userRef, userEntry);
+  }
+}
+
+export async function getUser(uid) {
+  try {
+    const userRef = doc(db, "users", uid);
+    const userSnapshot = await getDoc(userRef);
+
+    if (userSnapshot.exists()) {
+      const userData = userSnapshot.data();
+      // Handle the user data here
+      return userData;
+    } else {
+      // Document does not exist
+      console.log("User document does not exist");
+    }
+  } catch (error) {
+    // Handle any errors that occur during the fetching process
+    console.error("Error fetching user document:", error);
+  }
 }
 
 export async function getUserReviews(uid) {

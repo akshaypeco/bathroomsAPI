@@ -11,9 +11,10 @@ import { Ionicons } from "@expo/vector-icons";
 import {
   createUserWithEmailAndPassword,
   getAuth,
+  signInAnonymously,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import app from "../../../firebase";
+import app, { addUser } from "../../../firebase";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
@@ -26,6 +27,7 @@ const LoginScreen = () => {
     createUserWithEmailAndPassword(getAuth(app), email, "password")
       .then((userCredentials) => {
         const user = userCredentials.user;
+        addUser(user.uid);
         console.log("Registered with: ", user.email);
       })
       .catch((e) => {
@@ -35,6 +37,8 @@ const LoginScreen = () => {
         }
         if (e.code == "auth/missing-email") {
           setError("Please enter an email.");
+        } else {
+          setError(e);
         }
       });
   };
@@ -53,7 +57,22 @@ const LoginScreen = () => {
         }
         if (e.code == "auth/user-not-found") {
           setError("Email not found. Please try again or register.");
+        } else {
+          setError(e);
         }
+      });
+  };
+
+  const handleAnonymousLogin = () => {
+    setIsLoggingIn(true);
+    signInAnonymously(getAuth(app))
+      .then((userCredentials) => {
+        const user = userCredentials.user;
+        console.log("Logged in anonymously: ", user.uid);
+      })
+      .catch((e) => {
+        setIsLoggingIn(false);
+        setError("Error. Please try again.");
       });
   };
 
@@ -78,7 +97,7 @@ const LoginScreen = () => {
           }}
         >
           <Ionicons name="information-circle-outline" size={17} color="grey" />
-          <Text style={styles.disclaimerText}>Your email is confidential.</Text>
+          <Text style={styles.disclaimerText}>For authentication only.</Text>
         </View>
       </View>
       <View style={styles.buttonContainer}>
@@ -98,6 +117,20 @@ const LoginScreen = () => {
         >
           <Text style={styles.buttonOutlineText}>
             {isRegistering ? "Registering..." : "Register"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <View style={{ marginTop: 10 }}>
+        <Text style={{ fontFamily: "ARegular" }}>or</Text>
+      </View>
+      <View style={[styles.buttonContainer, { marginTop: 10 }]}>
+        <TouchableOpacity
+          style={[styles.button, styles.buttonOutline]}
+          onPress={handleAnonymousLogin}
+          disabled={isLoggingIn ? true : false}
+        >
+          <Text style={styles.buttonOutlineText}>
+            {isLoggingIn ? "Logging in..." : "Continue as guest"}
           </Text>
         </TouchableOpacity>
       </View>

@@ -20,13 +20,13 @@ const RatingSubmittedScreen = ({ navigation, route }) => {
       <Text
         style={{
           fontFamily: "ARegular",
-          fontSize: "18",
+          fontSize: 15,
           marginTop: 17,
           textAlign: "center",
         }}
       >
-        Thanks for contributing to the community. Your rating will be reviewed
-        shortly. It is visible under the account tab.
+        Thanks for contributing to the community 🎉. Your rating will be
+        reviewed shortly. To check on its status, visit the account page.
       </Text>
       <TouchableOpacity
         style={styles.rateButtonContainer}

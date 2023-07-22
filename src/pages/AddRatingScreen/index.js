@@ -8,6 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import React, { useState } from "react";
+import * as Haptics from "expo-haptics";
 import { AntDesign } from "@expo/vector-icons";
 import RatingNumberInput from "../../components/RatingNumberInput";
 import RatingBinaryInput from "../../components/RatingBinaryInput";
@@ -16,7 +17,7 @@ import { submitReview } from "../../../firebase";
 import { useAuth } from "../../hooks/useAuth";
 
 const AddRatingScreen = ({ navigation, route }) => {
-  const { user } = useAuth();
+  const user = useAuth();
   const { hit } = route.params;
   const [isLoading, setIsLoading] = useState(false);
 
@@ -31,13 +32,11 @@ const AddRatingScreen = ({ navigation, route }) => {
   const handleSubmit = () => {
     setIsLoading(!isLoading);
     const data = {
-      ...hit,
+      id: hit.id,
+      name: hit.name,
       is_clean: clean,
       wait_time: wait,
       is_stocked: stocked,
-      // changing_table: changing,
-      // unisex: gender,
-      // accessible: accessible,
       comment: comment,
       approved: false,
       uid: user.uid,
@@ -50,58 +49,66 @@ const AddRatingScreen = ({ navigation, route }) => {
           alert(e);
           return;
         })
+        .then(() => {
+          Haptics.selectionAsync();
+        })
         .finally(navigation.navigate("RatingSubmitted", { hit }));
     }, 200);
   };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
-      <ScrollView>
-        <TouchableOpacity
-          onPressIn={() => {
-            navigation.goBack();
-          }}
-        >
-          <AntDesign
-            name="close"
-            size={24}
-            color="black"
-            style={{ position: "absolute", left: 20, top: 15 }}
-          />
-        </TouchableOpacity>
-        <View style={styles.headingContainer}>
-          <Text
-            style={{ fontFamily: "ARegular", fontSize: 17, color: "#0077b6" }}
-          >
-            Rate your experience at
-          </Text>
-        </View>
+      {user?.email ? (
         <View>
-          <Text style={styles.title}>{hit.name}</Text>
-        </View>
+          <ScrollView>
+            <TouchableOpacity
+              onPressIn={() => {
+                navigation.goBack();
+              }}
+            >
+              <AntDesign
+                name="close"
+                size={24}
+                color="black"
+                style={{ position: "absolute", left: 20, top: 15 }}
+              />
+            </TouchableOpacity>
+            <View style={styles.headingContainer}>
+              <Text
+                style={{
+                  fontFamily: "ARegular",
+                  fontSize: 17,
+                  color: "#0077b6",
+                }}
+              >
+                Rate your experience at
+              </Text>
+            </View>
+            <View>
+              <Text style={styles.title}>{hit.name}</Text>
+            </View>
 
-        <RatingNumberInput
-          title="The toilet was clean 🧼"
-          handleRating={setClean}
-        />
-        <RatingNumberInput
-          title="The wait was short ⌛"
-          handleRating={setWait}
-        />
-        <RatingNumberInput
-          title="The restroom was stocked 🧻"
-          hand
-          leRating={setStocked}
-        />
-        <RatingInput
-          title="Additional comments"
-          placeholder={"Optional"}
-          handleInput={setComment}
-        />
-        {/* <RatingBinaryInput title="Changing table" handleRating={setChanging} />
+            <RatingNumberInput
+              title="1. The toilet was clean 🧼"
+              handleRating={setClean}
+            />
+            <RatingNumberInput
+              title="2. The wait was short ⌛"
+              handleRating={setWait}
+            />
+            <RatingNumberInput
+              title="3. The restroom was stocked 🧻"
+              handleRating={setStocked}
+            />
+            <RatingInput
+              title="4. Additional comments"
+              placeholder={"Optional"}
+              handleInput={setComment}
+            />
+            {/* <RatingBinaryInput title="Changing table" handleRating={setChanging} />
         <RatingBinaryInput title="Unisex" handleRating={setGender} />
         <RatingBinaryInput title="Accessible" handleRating={setAccessible} /> */}
-        {/* <View style={styles.ratingOptionsContainer}>
+            {/* <View style={styles.ratingOptionsContainer}>
         <TouchableOpacity style={styles.ratingNumberContainer}>
           <Feather name="thumbs-up" size={32} color="#008000" />
         </TouchableOpacity>
@@ -109,24 +116,47 @@ const AddRatingScreen = ({ navigation, route }) => {
           <Feather name="thumbs-down" size={32} color="#ad2e24" />
         </TouchableOpacity>
       </View> */}
-        <TouchableOpacity
-          onPress={handleSubmit}
-          disabled={isLoading ? true : false}
-        >
-          <View style={styles.rateButtonContainer}>
-            {isLoading && (
-              <ActivityIndicator
-                size="20"
-                color="white"
-                style={{ marginRight: 25 }}
-              />
-            )}
-            <Text style={styles.rateButtonText}>
-              {isLoading ? "Loading..." : "Submit"}
+          </ScrollView>
+          <TouchableOpacity
+            onPress={handleSubmit}
+            disabled={isLoading ? true : false}
+          >
+            <View style={styles.rateButtonContainer}>
+              {isLoading && (
+                <ActivityIndicator
+                  size="20"
+                  color="white"
+                  style={{ marginRight: 25 }}
+                />
+              )}
+              <Text style={styles.rateButtonText}>
+                {isLoading ? "Loading..." : "Submit"}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <View>
+          <TouchableOpacity
+            onPressIn={() => {
+              navigation.goBack();
+            }}
+          >
+            <AntDesign
+              name="close"
+              size={24}
+              color="black"
+              style={{ marginLeft: 15, marginTop: 10 }}
+            />
+          </TouchableOpacity>
+          <View style={{ marginHorizontal: 20, marginTop: 20 }}>
+            <Text style={{ fontFamily: "ABold", fontSize: 15.5 }}>
+              Register to add and review bathrooms. Create an account by logging
+              out.
             </Text>
           </View>
-        </TouchableOpacity>
-      </ScrollView>
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -152,12 +182,11 @@ const styles = StyleSheet.create({
   },
   rateButtonContainer: {
     flexDirection: "row",
-    backgroundColor: "#0077b6",
+    backgroundColor: "black",
     alignSelf: "center",
     paddingVertical: 10,
     paddingHorizontal: 50,
     borderRadius: 20,
-    marginTop: 20,
   },
   rateButtonText: {
     fontFamily: "ABold",

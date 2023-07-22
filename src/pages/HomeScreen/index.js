@@ -13,13 +13,15 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import { Foundation } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
-
+import { Octicons } from "@expo/vector-icons";
 import * as Location from "expo-location";
 import MapView, { Callout, Marker } from "react-native-maps";
 import axios from "axios";
 import getDistance from "geolib/es/getPreciseDistance";
 import { convertDistance } from "geolib";
+import { getBathroomReviews } from "../../../firebase";
 
 export default function HomeScreen({ navigation }) {
   const mapRef = useRef(null);
@@ -28,6 +30,10 @@ export default function HomeScreen({ navigation }) {
   const [currRegion, setCurrRegion] = useState([]);
   const [markerData, setMarkerData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  const [toggleUnisex, setToggleUnisex] = useState(false);
+  const [toggleChangingTable, setToggleChangingTable] = useState(false);
+  const [toggleAccessible, setToggleAccessible] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -120,165 +126,128 @@ export default function HomeScreen({ navigation }) {
           onRegionChangeComplete(region);
         }}
       >
-        {markerData.map((hit) => (
-          <Marker
-            coordinate={{
-              longitude: parseFloat(hit.longitude),
-              latitude: parseFloat(hit.latitude),
-            }}
-            key={hit._id}
-          >
-            <Foundation name="marker" size={24} color="#0077b6" />
-            <Callout
-              onPress={() => {
-                navigation.navigate("BathroomDetails", {
-                  hit,
-                  latitude: currLoc.latitude,
-                  longitude: currLoc.longitude,
-                });
-              }}
-              style={styles.calloutContainer}
-            >
-              <View style={styles.calloutViewContainer}>
-                <View>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <View
-                      style={{
-                        width: 130,
-                        paddingRight: 5,
-                      }}
-                    >
-                      <Text style={styles.title}>{hit.name}</Text>
-                    </View>
+        {markerData.map((hit) => {
+          // Check for activated filters
+          if (
+            (!toggleAccessible || hit.is_accessible) &&
+            (!toggleChangingTable || hit.changing_table) &&
+            (!toggleUnisex || hit.unisex)
+          ) {
+            return (
+              <Marker
+                coordinate={{
+                  longitude: parseFloat(hit.longitude),
+                  latitude: parseFloat(hit.latitude),
+                }}
+                key={hit._id}
+              >
+                <Octicons name="dot-fill" size={18} color="black" />
+                <Callout
+                  onPress={() => {
+                    navigation.navigate("BathroomDetails", {
+                      hit,
+                      latitude: currLoc.latitude,
+                      longitude: currLoc.longitude,
+                    });
+                  }}
+                  style={styles.calloutContainer}
+                >
+                  <View style={styles.calloutViewContainer}>
                     <View>
-                      <Text style={styles.distance}>
-                        {convertDistance(
-                          getDistance(
-                            {
-                              latitude: hit.latitude,
-                              longitude: hit.longitude,
-                            },
-                            {
-                              latitude: currLoc.latitude,
-                              longitude: currLoc.longitude,
-                            }
-                          ),
-                          "mi"
-                        ).toFixed(1)}{" "}
-                        mi
-                      </Text>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <View
+                          style={{
+                            width: 130,
+                            paddingRight: 5,
+                          }}
+                        >
+                          <Text style={styles.title}>{hit.name}</Text>
+                        </View>
+                        <View>
+                          <Text style={styles.distance}>
+                            {convertDistance(
+                              getDistance(
+                                {
+                                  latitude: hit.latitude,
+                                  longitude: hit.longitude,
+                                },
+                                {
+                                  latitude: currLoc.latitude,
+                                  longitude: currLoc.longitude,
+                                }
+                              ),
+                              "mi"
+                            ).toFixed(1)}{" "}
+                            mi
+                          </Text>
+                        </View>
+                      </View>
+                      <View
+                        style={{
+                          width: 160,
+                          paddingRight: 5,
+                        }}
+                      >
+                        <Text style={styles.street}>{hit.street}</Text>
+                      </View>
+
+                      {hit.unisex == 1 ||
+                      hit.changing_table == 1 ||
+                      hit.accessible == 1 ? (
+                        <View style={styles.attributesContainer}>
+                          <View style={{ flexDirection: "row" }}>
+                            {hit.unisex == 1 ? (
+                              <View style={styles.tagContainer}>
+                                <Text style={styles.attributes}>Unisex</Text>
+                              </View>
+                            ) : null}
+                            {hit.changing_table == 1 ? (
+                              <View style={styles.tagContainer}>
+                                <Text style={styles.attributes}>
+                                  Changing table
+                                </Text>
+                              </View>
+                            ) : null}
+                            {hit.accessible == 1 ? (
+                              <View style={styles.tagContainer}>
+                                <Text style={styles.attributes}>
+                                  Accessible
+                                </Text>
+                              </View>
+                            ) : null}
+                          </View>
+                        </View>
+                      ) : null}
                     </View>
                   </View>
-                  <View
-                    style={{
-                      width: 160,
-                      paddingRight: 5,
-                    }}
-                  >
-                    <Text style={styles.street}>{hit.street}</Text>
-                  </View>
-                  {/* <View>
-                    {(hit.upvote > 0 || hit.downvote > 0) &&
-                    hit.upvote / (hit.upvote + hit.downvote) < 0.5 ? (
-                      <View style={styles.lowRatingContainer}>
-                        <Text style={styles.rating}>
-                          {Math.round(
-                            (hit.upvote / (hit.upvote + hit.downvote)) * 100
-                          )}
-                          %
-                        </Text>
-                      </View>
-                    ) : null}
-                  </View> */}
-                  {/* <View>
-                    {(hit.upvote > 0 || hit.downvote > 0) &&
-                    hit.upvote / (hit.upvote + hit.downvote) >= 0.5 &&
-                    hit.upvote / (hit.upvote + hit.downvote) < 0.75 ? (
-                      <View style={styles.midRatingContainer}>
-                        <Text style={styles.rating}>
-                          {Math.round(
-                            (hit.upvote / (hit.upvote + hit.downvote)) * 100
-                          )}
-                          %
-                        </Text>
-                      </View>
-                    ) : null}
-                  </View> */}
-                  {/* <View>
-                    {(hit.upvote > 0 || hit.downvote > 0) &&
-                    hit.upvote / (hit.upvote + hit.downvote) > 0.75 ? (
-                      <View style={styles.bestRatingContainer}>
-                        <Text style={styles.rating}>
-                          {Math.round(
-                            (hit.upvote / (hit.upvote + hit.downvote)) * 100
-                          )}
-                          %
-                        </Text>
-                      </View>
-                    ) : null}
-                  </View> */}
-                  {/* <View>
-                    {hit.upvote == 0 && hit.downvote == 0 ? (
-                      <Text style={styles.rating}>No ratings yet</Text>
-                    ) : null}
-                  </View> */}
-                  {hit.unisex == 1 ||
-                  hit.changing_table == 1 ||
-                  hit.accessible == 1 ? (
-                    <View style={styles.attributesContainer}>
-                      <View style={{ flexDirection: "row" }}>
-                        {hit.unisex == 1 ? (
-                          <View style={styles.tagContainer}>
-                            <Text style={styles.attributes}>Unisex</Text>
-                          </View>
-                        ) : null}
-                        {hit.changing_table == 1 ? (
-                          <View style={styles.tagContainer}>
-                            <Text style={styles.attributes}>
-                              Changing table
-                            </Text>
-                          </View>
-                        ) : null}
-                        {hit.accessible == 1 ? (
-                          <View style={styles.tagContainer}>
-                            <Text style={styles.attributes}>Accessible</Text>
-                          </View>
-                        ) : null}
-                      </View>
-                    </View>
-                  ) : null}
-                </View>
-              </View>
-            </Callout>
-          </Marker>
-        ))}
-        {/* {currMarkerLoc ? (
-          <Marker
-            coordinate={{
-              longitude: currMarkerLoc.longitude,
-              latitude: currMarkerLoc.latitude,
-            }}
-          >
-            <View style={styles.currentLocationBlueDot}></View>
-          </Marker>
-        ) : null} */}
+                </Callout>
+              </Marker>
+            );
+          }
+          return null; // If conditions are not met, return null to render nothing
+        })}
       </MapView>
       <TouchableOpacity
         style={styles.unisexButton}
-        // onPressIn={() => {
-        //   snapToUser();
-        // }}
+        onPressIn={() => {
+          setToggleUnisex(!toggleUnisex);
+        }}
       >
-        <FontAwesome
+        {/* <FontAwesome
           name="genderless"
           size={30}
-          color="black"
+          color={toggleUnisex ? "black" : "lightgrey"}
           style={{ marginLeft: 2, marginBottom: 1 }}
+        /> */}
+        <MaterialCommunityIcons
+          name="gender-male-female"
+          size={24}
+          color={toggleUnisex ? "black" : "lightgrey"}
         />
       </TouchableOpacity>
       <TouchableOpacity
@@ -299,19 +268,27 @@ export default function HomeScreen({ navigation }) {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.accessibleButton}
-        // onPressIn={() => {
-        //   snapToUser();
-        // }}
+        onPressIn={() => {
+          setToggleAccessible(!toggleAccessible);
+        }}
       >
-        <MaterialIcons name="accessible-forward" size={24} color="black" />
+        <MaterialIcons
+          name="accessible-forward"
+          size={24}
+          color={toggleAccessible ? "black" : "lightgrey"}
+        />
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.changingTableButton}
-        // onPressIn={() => {
-        //   snapToUser();
-        // }}
+        onPressIn={() => {
+          setToggleChangingTable(!toggleChangingTable);
+        }}
       >
-        <MaterialIcons name="baby-changing-station" size={24} color="black" />
+        <MaterialIcons
+          name="baby-changing-station"
+          size={24}
+          color={toggleChangingTable ? "black" : "lightgrey"}
+        />
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.currentLocationButton}
@@ -323,21 +300,44 @@ export default function HomeScreen({ navigation }) {
       </TouchableOpacity>
       {currRegion.longitudeDelta > 0.4 || currRegion.latitudeDelta > 0.4 ? (
         <View style={[styles.searchAreaButton]}>
-          <Text style={{ fontSize: 17, color: "#e63946" }}>
+          <Text style={{ fontSize: 14, color: "#e63946" }}>
             Zoom in to search
           </Text>
         </View>
       ) : null}
-      {/* {isLoading ? (
-        <View
-          style={[
-            styles.loadingIndicator,
-            { flexDirection: "row", borderRadius: 100 },
-          ]}
-        >
-          <ActivityIndicator color={"black"} size={8} />
-        </View>
-      ) : null} */}
+      {isLoading &&
+        currRegion.longitudeDelta < 0.4 &&
+        currRegion.latitudeDelta < 0.4 && (
+          <View
+            style={[
+              styles.loadingIndicator,
+              { flexDirection: "row", borderRadius: 100 },
+            ]}
+          >
+            <ActivityIndicator color={"black"} size={8} />
+          </View>
+        )}
+      {!isLoading &&
+        currRegion.longitudeDelta < 0.4 &&
+        currRegion.latitudeDelta < 0.4 && (
+          <View style={[styles.resultsIndicator]}>
+            {markerData.length == 0 && (
+              <Text style={{ fontFamily: "ARegular", fontSize: 14 }}>
+                0 bathrooms
+              </Text>
+            )}
+            {markerData.length == 1 && (
+              <Text style={{ fontFamily: "ARegular", fontSize: 14 }}>
+                {markerData.length} bathroom
+              </Text>
+            )}
+            {markerData.length > 1 && (
+              <Text style={{ fontFamily: "ARegular", fontSize: 14 }}>
+                {markerData.length} bathrooms
+              </Text>
+            )}
+          </View>
+        )}
     </View>
   );
 }
@@ -465,6 +465,21 @@ const styles = StyleSheet.create({
     bottom: Dimensions.get("window").height * 0.02,
     height: 40,
     width: 40,
+    alignSelf: "center",
+    borderRadius: 40,
+    paddingHorizontal: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
+    shadowColor: "#171717",
+    shadowOffset: { width: -2, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+  },
+  resultsIndicator: {
+    position: "absolute",
+    bottom: Dimensions.get("window").height * 0.02,
+    height: 40,
     alignSelf: "center",
     borderRadius: 40,
     paddingHorizontal: 20,
