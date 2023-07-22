@@ -7,20 +7,20 @@ import {
   ActivityIndicator,
   ScrollView,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import * as Haptics from "expo-haptics";
 import { AntDesign } from "@expo/vector-icons";
 import RatingNumberInput from "../../components/RatingNumberInput";
 import RatingBinaryInput from "../../components/RatingBinaryInput";
 import RatingInput from "../../components/RatingInput";
-import { submitReview } from "../../../firebase";
+import { getUser, submitReview } from "../../../firebase";
 import { useAuth } from "../../hooks/useAuth";
 
 const AddRatingScreen = ({ navigation, route }) => {
-  const user = useAuth();
+  const user = useAuth().user;
   const { hit } = route.params;
   const [isLoading, setIsLoading] = useState(false);
-
+  const [userDate, setUserData] = useState();
   const [clean, setClean] = useState(0);
   const [wait, setWait] = useState(0);
   const [stocked, setStocked] = useState(0);
@@ -28,6 +28,16 @@ const AddRatingScreen = ({ navigation, route }) => {
   // const [gender, setGender] = useState(false);
   // const [accessible, setAccessible] = useState(false);
   const [comment, setComment] = useState("");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      console.log("User UID: ", user.uid);
+      await getUser(user.uid).then((res) => {
+        setUserData(res);
+      });
+    };
+    fetchData().catch((e) => console.log(e));
+  }, [user]);
 
   const handleSubmit = () => {
     setIsLoading(!isLoading);
@@ -40,6 +50,7 @@ const AddRatingScreen = ({ navigation, route }) => {
       comment: comment,
       approved: false,
       uid: user.uid,
+      username: userDate.username,
       review_month_created: new Date().getMonth() + 1,
       review_year_created: new Date().getFullYear(),
     };

@@ -14,6 +14,7 @@ import { getAuth, signOut } from "firebase/auth";
 import { useAuth } from "../../hooks/useAuth";
 import { addUsername, getUser, getUserReviews } from "../../../firebase";
 import Modal from "react-native-modal";
+import ReviewCard from "../../components/ReviewCard";
 
 const AccountScreen = () => {
   const auth = getAuth();
@@ -69,8 +70,8 @@ const AccountScreen = () => {
           {user?.email ? (
             <Text style={styles.username}>
               Username:{" "}
-              {userData.username != ""
-                ? userData.username
+              {userData?.username != ""
+                ? userData?.username
                 : user?.uid.substring(0, 8)}
             </Text>
           ) : (
@@ -78,7 +79,7 @@ const AccountScreen = () => {
               Logged in anonymously as {user?.uid.substring(0, 8)}
             </Text>
           )}
-          {userData.username == "" ? (
+          {userData?.username == "" ? (
             <Pressable
               style={{
                 flex: 1,
@@ -185,13 +186,15 @@ const AccountScreen = () => {
           <Text style={styles.statsHeader}>Your Reviews</Text>
           {reviews && (
             <View>
-              <View>
+              <ScrollView horizontal={true}>
                 {reviews?.map(function (item) {
                   return (
-                    <View key={item.id} style={styles.reviewContainer}></View>
+                    <View key={item.id} style={styles.reviewContainer}>
+                      <ReviewCard review={item} />
+                    </View>
                   );
                 })}
-              </View>
+              </ScrollView>
             </View>
           )}
           {!user?.email && (
@@ -272,11 +275,8 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   reviewContainer: {
-    backgroundColor: "#f7f7f7",
-    marginHorizontal: 10,
-    marginBottom: 10,
-    padding: 10,
-    borderRadius: 10,
+    flexDirection: "row",
+    marginLeft: 20,
   },
   name: { fontFamily: "ABold", fontSize: 16 },
   city: { fontFamily: "ARegular", fontSize: 15 },
